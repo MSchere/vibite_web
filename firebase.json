@@ -1,0 +1,56 @@
+{
+    "functions": [
+        {
+            "source": "functions",
+            "codebase": "vibite",
+            "ignore": [
+                "node_modules",
+                ".git",
+                "firebase-debug.log",
+                "firebase-debug.*.log"
+            ],
+            "region": "europe-west1",
+            "predeploy": []
+        }
+    ],
+    "firestore": {
+        "rules": "firestore.rules",
+        "indexes": "firestore.indexes.json"
+    },
+    "hosting": {
+        "public": "build",
+        "rewrites": [
+            {
+                "source": "/dishes",
+                "destination": "/dishes.html"
+            },
+            {
+                "source": "**",
+                "destination": "/index.html"
+            }
+        ],
+        "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+        "frameworksBackend": {
+            "region": "europe-west1",
+            "maxInstances": 1
+        }
+    },
+    "emulators": {
+        "auth": {
+            "port": 9099
+        },
+        "functions": {
+            "port": 5001
+        },
+        "firestore": {
+            "port": 8080
+        },
+        "ui": {
+            "enabled": true
+        },
+        "singleProjectMode": true,
+        "hosting": {
+            "port": 5000
+        }
+    }
+}

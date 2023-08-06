@@ -1,0 +1,14 @@
+{
+    "targets": {
+        "vibite-3ab78": {
+            "hosting": {
+                "vibite": [
+                    "vibite-3ab78"
+                ]
+            }
+        }
+    },
+    "projects": {
+        "default": "vibite-3ab78"
+    }
+}

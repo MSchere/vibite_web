@@ -1,0 +1,7 @@
+{
+    "plugins": ["prettier-plugin-svelte"],
+    "doubleQuote": true,
+    "semi": true,
+    "tabWidth": 4,
+    "preferTemplate": true
+}

@@ -1,0 +1,10 @@
+{
+    "include": [".eslintrc.js"],
+    "compilerOptions": {
+        "paths": {
+            "src/*": ["src/*"],
+            "$root/*": ["../*"],
+            "$types/*": ["../src/types/*"]
+        }
+    }
+}
