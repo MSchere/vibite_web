@@ -1,37 +1,55 @@
 <script script lang="ts">
     import {
         collection,
-        getDocs,
         onSnapshot,
         orderBy,
         query,
+        where,
     } from "firebase/firestore";
     import { firestore } from "$lib/firebase";
-    import { Nutrients, type Dish } from "$types/dish";
     import { onMount } from "svelte";
+    import Icon from "@iconify/svelte";
     import Modal from "$components/Modal.svelte";
+    import NutritionalInfo from "$components/NutritionalInfo.svelte";
+    import type { Dish } from "$src/types/dish";
 
+    let activeDishes: Dish[] = [];
+    let inactiveDishes: Dish[] = [];
     let dishes: Dish[] = [];
     let selectedDish: Dish;
-    let isLoading = true;
     let showModal = false;
 
     onMount(async () => {
-        isLoading = true;
         const dishesRef = collection(firestore, "dishes");
-        const dishesQuery = query(dishesRef, orderBy("score", "desc"));
+        const activeDishesQuery = query(
+            dishesRef,
+            where("isAvailable", "==", true),
+            orderBy("score", "desc"),
+        );
+        const inactiveDishesQuery = query(
+            dishesRef,
+            where("isAvailable", "==", false),
+            orderBy("score", "desc"),
+        );
         //subscribe to changes
-        onSnapshot(dishesQuery, (snapshot) => {
-            dishes = snapshot.docs.map((doc) => {
+        onSnapshot(activeDishesQuery, (snapshot: any) => {
+            activeDishes = snapshot.docs.map((doc: any) => {
                 const dish = doc.data() as Dish;
                 return dish;
             });
-            isLoading = false;
+            dishes = activeDishes.concat(inactiveDishes);
+        });
+        onSnapshot(inactiveDishesQuery, (snapshot: any) => {
+            inactiveDishes = snapshot.docs.map((doc: any) => {
+                const dish = doc.data() as Dish;
+                return dish;
+            });
+            dishes = activeDishes.concat(inactiveDishes);
         });
     });
 
-    function formatDate(timestamp: number) {
-        if (!timestamp) return;
+    function formatDate(timestamp: number): string {
+        if (!timestamp) return "ERROR";
         const date = new Date(timestamp * 1000);
         const day = date.getDate();
         const month = date.getMonth() + 1;
@@ -43,153 +61,255 @@
     }
 </script>
 
-<main class="container">
-    <h1 class="title primary">
-        <a href="/"> ViBite </a>
-    </h1>
-    {#if dishes && dishes.length > 0}
-        <div class="dishes">
-            {#each dishes as dish}
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-                <article
-                    class={dish.isAvailable === true ? "dish" : "dish disabled"}
-                    on:click={() => {
-                        selectedDish = dish;
-                        showModal = true;
-                    }}
-                >
-                    <img src={dish.imageUrl} alt={dish.name} />
-                    <div class="p-0-5">
-                        <h4>{dish.name}</h4>
-                        <div class="d-flex align-center">
-                            <span class="fw-bold dish-price">
-                                {`${dish.price} €`}
-                            </span>
-                            <div
-                                class="d-flex p-absolute gap-0-5 top-0 right-0"
-                            >
-                                <p class="score">
-                                    {`${dish.score} / 10`}
-                                </p>
-                                <span
-                                    class={dish.nutriScore === "A"
-                                        ? "nutriscore dark-green"
-                                        : dish.nutriScore === "B"
-                                        ? "nutriscore light-green"
-                                        : dish.nutriScore === "C"
-                                        ? "nutriscore yellow"
-                                        : dish.nutriScore === "D"
-                                        ? "nutriscore orange"
-                                        : "nutriscore red"}
+<main>
+    <div class="container">
+        <h1 class="title primary">
+            <a href="/"> ViBite </a>
+        </h1>
+        {#if dishes?.length > 0}
+            <div class="dishes">
+                {#each dishes as dish}
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                    <article
+                        class={dish.isAvailable === true
+                            ? "dish"
+                            : "dish disabled"}
+                        on:click={() => {
+                            selectedDish = dish;
+                            showModal = true;
+                        }}
+                    >
+                        <img src={dish.imageUrl} alt={dish.name} />
+                        <div class="p-0-5">
+                            <div class="d-flex align-center">
+                                <div
+                                    class="d-flex align-center p-absolute gap-0-5 top-0 right-0"
                                 >
-                                    {dish.nutriScore}
+                                    <span class="score">
+                                        {`${dish.score} / 10`}
+                                    </span>
+                                    <span
+                                        class={dish.nutriScore === "A"
+                                            ? "nutriscore dark-green"
+                                            : dish.nutriScore === "B"
+                                            ? "nutriscore light-green"
+                                            : dish.nutriScore === "C"
+                                            ? "nutriscore yellow"
+                                            : dish.nutriScore === "D"
+                                            ? "nutriscore orange"
+                                            : "nutriscore red"}
+                                    >
+                                        {dish.nutriScore}
+                                    </span>
+                                </div>
+                                <span class="fw-bold dish-price">
+                                    {`${dish.price} €`}
                                 </span>
                             </div>
+                            <h4>{dish.name}</h4>
                         </div>
-                    </div>
-                </article>
-            {/each}
-        </div>
-    {:else if isLoading}
-        <div class="spinner" aria-busy="true" />
-    {:else}
-        <p>No hay platos disponibles.</p>
-    {/if}
+                    </article>
+                {/each}
+            </div>
+        {:else}
+            <div class="dishes">
+                {#each { length: 9 } as _}
+                    <article class="dish shimmer"></article>
+                {/each}
+            </div>
+        {/if}
+    </div>
 </main>
 
 <Modal bind:showModal>
-    <div class="ellipsis d-flex align-center justify-center" slot="header">
+    <div class="d-flex align-center justify-center" slot="header">
         <h3 class="primary">{selectedDish?.name}</h3>
     </div>
     <div class="modal-section">
         <div class="d-flex gap-0-5">
-            <img src={selectedDish?.imageUrl} alt={selectedDish?.name} />
+            <div class="p-relative">
+                <img src={selectedDish?.imageUrl} alt={selectedDish?.name} />
+                <span class="timestamp-text">
+                    {`Actualizado: ${formatDate(selectedDish?.updatedAt)}`}
+                </span>
+            </div>
             {#if selectedDish?.nutrients}
-                <table>
-                    <tbody>
-                        <tr>
-                            <td></td>
-                            <td class="table-hint">100g</td>
-                            <td class="table-hint">Total</td>
-                        </tr>
-                        {#each Object.entries(selectedDish?.nutrients) as [nutrientName, info]}
-                            <tr class="d-flex gap-0-5">
-                                <td class="fw-bold"
-                                    >{`${Nutrients[nutrientName]}:`}</td
-                                >
-                                <td>
-                                    {`${info.value100} ${info.unit}`}
-                                </td>
-                                <td>
-                                    {`${info.valueTotal} ${info.unit}`}
-                                </td>
-                            </tr>
-                        {/each}
-                    </tbody>
-                </table>
+                <div class="table-container">
+                    <NutritionalInfo {selectedDish} />
+                </div>
             {/if}
         </div>
         <div class="dish-more-info">
-            <div class="d-flex gap-0-5">
-                <span class="fw-bold">Ingredientes: </span>
-                <p>{selectedDish?.ingredients}</p>
+            <div class="desktop">
+                <div class="d-flex gap-0-5">
+                    <span class="fw-bold">Ingredientes: </span>
+                    <p>{selectedDish?.ingredients}</p>
+                </div>
+                <div class="d-flex gap-0-5">
+                    <span class="fw-bold">Alérgenos: </span>
+                    <p>{selectedDish?.allergens}</p>
+                </div>
             </div>
-            <div class="d-flex gap-0-5">
-                <span class="fw-bold">Alérgenos: </span>
-                <p>{selectedDish?.allergens}</p>
-            </div>
-            <span class="fw-bold fs-0-5">
-                {`Actualizado: ${formatDate(selectedDish?.updatedAt)}`}
-            </span>
-            <div class="container">
-                {#if selectedDish?.isVegan}
-                    <img class="icon" src="" alt="isVegan" />
-                {/if}
-                {#if selectedDish?.isGlutenFree}
-                    <img class="icon" src="" alt="isGlutenFree" />
-                {/if}
-                {#if selectedDish?.isLactoseFree}
-                    <img class="icon" src="" alt="isLactoseFree" />
-                {/if}
-            </div>
+            <details class="mobile w-100">
+                <summary class="fw-bold">Ingredientes</summary>
+                <div class="d-flex gap-0-5">
+                    <p>{selectedDish?.ingredients}</p>
+                </div>
+                <div class="d-flex gap-0-5">
+                    <span class="fw-bold">Alérgenos: </span>
+                    <p>{selectedDish?.allergens}</p>
+                </div>
+            </details>
         </div>
+        <a href={selectedDish?.dishUrl} target="_blank" rel="noopener">
+            <button class="buy-btn">
+                <Icon icon="typcn:shopping-cart" height="24" />
+                {`Comprar -  ${selectedDish?.price}€`}
+            </button>
+        </a>
     </div>
 </Modal>
 
-<style type="text/scss">
-    article {
-        margin: unset;
-        padding: unset;
+<style lang="scss">
+    .dishes {
+        display: grid;
+        grid-auto-rows: minmax(0px, 1fr);
+        grid-template-columns: repeat(var(--template-columns), minmax(0, 1fr));
+        gap: 1rem;
+
+        .dish {
+            cursor: pointer;
+            border-radius: 15px;
+            position: relative;
+            margin: 0;
+            padding: 0;
+
+            .score {
+                text-shadow:
+                    1px 0 #fff,
+                    -1px 0 #fff,
+                    0 1px #fff,
+                    0 -1px #fff,
+                    1px 1px #fff,
+                    -1px -1px #fff,
+                    1px -1px #fff,
+                    -1px 1px #fff;
+                font-size: 0.85rem;
+                font-weight: bold;
+            }
+
+            .nutriscore {
+                width: 27px;
+                height: 30px;
+                border-radius: 45%;
+                border: 1px solid whitesmoke;
+                color: whitesmoke;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .dish-price {
+                position: absolute;
+                bottom: 2%;
+            }
+
+            img {
+                border-radius: 15px 15px 0 0;
+                object-fit: cover;
+                aspect-ratio: 1 / 1;
+            }
+
+            h4 {
+                font-size: 16px;
+                font-weight: bold;
+            }
+        }
+
+        .dish:hover {
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+            transform: scale(0.99);
+        }
     }
 
     h3 {
         margin: unset;
     }
 
-    table {
-        display: table;
-        border-collapse: collapse;
-        border-spacing: 0;
+    .modal-section {
+        width: 1080px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        .table-container {
+            width: 80%;
+        }
+        img {
+            height: 100%;
+            width: 100%;
+            border-radius: 15px;
+        }
+        .timestamp-text {
+            font-size: 0.75rem;
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+        }
+
+        .dish-more-info {
+            margin: 20px 5px 0px 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        details {
+            margin: 1rem 0 0 0;
+        }
+
+        .buy-btn {
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
     }
 
-    tbody {
-        margin: 0;
-        padding: 0;
-        border: 0;
-        font-size: 0.75rem;
-        vertical-align: baseline;
+    @media only screen and (max-width: 768px) {
+        .dish {
+            flex: 0 0 100%;
+        }
+        .dish-more-info {
+            margin: 0 !important;
+        }
+        .modal-section {
+            width: 100%;
+            .d-flex {
+                flex-direction: column;
+            }
+
+            .table-container {
+                width: 100%;
+            }
+
+            .timestamp-text {
+                top: 10px;
+            }
+
+            img {
+                width: 100%;
+            }
+        }
     }
 
-    tr {
-        display: table-row;
-        border-top: 0.1rem solid #9c9d99;
+    .shimmer {
+        height: 45vh;
     }
 
     .disabled {
         opacity: 0.5;
-        pointer-events: none;
-        cursor: pointer;
     }
 
     .dark-green {
@@ -210,109 +330,5 @@
 
     .red {
         background-color: #d32f2f;
-    }
-
-    .table-hint {
-        font-weight: bold;
-        color: #9c9d99;
-    }
-
-    .score {
-        text-shadow:
-            1px 0 #fff,
-            -1px 0 #fff,
-            0 1px #fff,
-            0 -1px #fff,
-            1px 1px #fff,
-            -1px -1px #fff,
-            1px -1px #fff,
-            -1px 1px #fff;
-        font-size: 0.75rem;
-        font-weight: bold;
-    }
-
-    .nutriscore {
-        width: 27px;
-        height: 30px;
-        border-radius: 45%;
-        border: 1px solid whitesmoke;
-        color: whitesmoke;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .dishes {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
-    }
-
-    .dish {
-        flex: 0 0 32%;
-        cursor: pointer;
-        border-radius: 15px;
-        height: 475px;
-        position: relative;
-    }
-
-    .dish .dish-price {
-        position: absolute;
-        bottom: 2%;
-    }
-
-    .dish:hover {
-        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
-        transform: scale(0.99);
-    }
-
-    .ellipsis {
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-    }
-
-    .dish img {
-        border-radius: 15px 15px 0 0;
-        object-fit: cover;
-        aspect-ratio: 1 / 1;
-    }
-
-    .dish h4 {
-        font-size: 16px;
-        font-weight: bold;
-    }
-
-    .modal-section {
-        width: 1080px;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-    }
-
-    .modal-section p {
-        font-size: 0.75rem;
-    }
-
-    .modal-section img {
-        width: 50%;
-        border-radius: 15px;
-    }
-
-    .modal-section .dish-more-info {
-        font-size: 0.75rem;
-        margin: 20px 5px 0px 5px;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .spinner {
-        size: 100px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
     }
 </style>

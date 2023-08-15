@@ -1,6 +1,6 @@
 <script lang="ts">
     import "@picocss/pico";
-    import "../app.scss";
+    import "$src/app.scss";
 </script>
 
 <slot />

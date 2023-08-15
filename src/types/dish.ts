@@ -4,16 +4,28 @@ export type NutrientInfo = {
     value100: number;
 };
 
-export enum Nutrients {
+export enum NutrientNames {
     ENERGY = "Energía",
+    FAT = "Grasas",
+    SATFAT = "Grasas saturadas",
+    PROTEIN = "Proteínas",
     CARBS = "Carbohidratos",
     FIBER = "Fibra",
-    SATFAT = "Grasas saturadas",
-    FAT = "Grasas",
     SUGAR = "Azúcar",
     SALT = "Sal",
-    PROTEIN = "Proteínas",
 }
+
+export type Nutrients = {
+    ENERGY: NutrientInfo;
+    carbs: NutrientInfo;
+    fiber: NutrientInfo;
+    satFat: NutrientInfo;
+    fat: NutrientInfo;
+    sugar: NutrientInfo;
+    salt: NutrientInfo;
+    protein: NutrientInfo;
+};
+
 
 export type Dish = {
     name: string;
@@ -21,16 +33,8 @@ export type Dish = {
     ingredients: string;
     price: number;
     allergens: string;
-    nutrients: {
-        energy: NutrientInfo;
-        carbs: NutrientInfo;
-        fiber: NutrientInfo;
-        satFat: NutrientInfo;
-        fat: NutrientInfo;
-        sugar: NutrientInfo;
-        salt: NutrientInfo;
-        protein: NutrientInfo;
-    };
+    nutrients: Nutrients;
+    dishUrl: string;
     imageUrl: string;
     isGlutenFree: boolean;
     isVegan: boolean;

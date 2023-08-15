@@ -9,6 +9,9 @@ const config = {
 
     kit: {
         alias: {
+            $src: "./src",
+            $assets: "./src/assets",
+            $styles: "./src/styles",
             $components: "./src/components",
             $types: "./src/types",
         },

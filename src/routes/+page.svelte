@@ -2,6 +2,7 @@
     import { httpsCallable } from "firebase/functions";
     import { functions } from "$lib/firebase";
     import { ErrorType } from "$types/error";
+    import Icon from "@iconify/svelte";
 
     let email = "";
     let emailError = "";
@@ -33,27 +34,40 @@
     }
 </script>
 
-<div id="frame">
-    <main>
-        <section class="container">
+<main id="frame">
+    <div class="container">
+        <div class="d-flex flex-column align-center">
+            <h1 class="title">
+                <a href="/dishes"> ViBite </a>
+            </h1>
+            <div class="srch">
+                <Icon
+                    icon="carbon:search"
+                    class="p-absolute"
+                    height="24"
+                    style="left: 1rem;"
+                ></Icon>
+                <input
+                    type="text"
+                    class="srch-box"
+                    placeholder="Buscar platos.."
+                />
+                <div class="srch-btn">
+                    <a href="/dishes">
+                        <button class="">Buscar</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="info container">
             <div class="section">
-                <h1 class="title primary">
-                    <a href="/"> ViBite </a>
-                </h1>
                 <p class="text">
-                    ViBite te permite encontrar y comparar tus tuppers de comida
-                    saludable favoritos de diferentes proveedores en un solo
-                    lugar. Basándote en tus objetivos nutricionales, te
-                    proporcionamos un sistema de puntuación para ayudarte a
-                    tomar la mejor decisión.
+                    Encuentra y compara tus tuppers de comida favoritos de
+                    varios proveedores en un solo lugar:
                 </p>
             </div>
 
             <div class="section">
-                <p class="text">
-                    Comparamos platos de las siguientes webs para ofrecerte la
-                    mejor opción:
-                </p>
                 <ul class="text">
                     <div class="d-flex align-center gap-0-5">
                         <input type="checkbox" checked={true} disabled={true} />
@@ -109,62 +123,165 @@
                         <li>Tappers.es</li>
                     </div>
                 </ul>
-                <a href="/dishes">
-                    <button class="button"> Ver platos </button>
-                </a>
             </div>
 
-            <div class="section subscribe">
+            <div class="section">
                 <p class="text">
                     Aprovecha las herramientas de ViBite para calcular tu BMI,
                     BMR y Metabolismo Basal y elegir los platos que mejor se
-                    adaptan a tus necesidades. ¡Únete a nuestra newsletter para
-                    mantenerte al día con los avances del proyecto!
+                    adapten a tus necesidades.
                 </p>
-
-                <div class="section">
-                    <input
-                        class="input"
-                        bind:value={email}
-                        placeholder="Introduce tu correo electrónico..."
-                        disabled={subscribed}
-                    />
-                    <button
-                        class="button"
-                        on:click={subscribe}
-                        disabled={subscribed}
-                    >
-                        Suscribirse
-                    </button>
-                    {#if emailError}<p class="error">{emailError}</p>{/if}
-                    {#if subscribed}<p class="success">
-                            ¡Gracias por suscribirte!
-                        </p>{/if}
+                <p>
+                    ¡Únete a nuestra newsletter para <strong
+                        >mantenerte al día</strong
+                    > en los avances del proyecto!
+                </p>
+                <div class="d-flex flex-column">
+                    <div class="email">
+                        <Icon
+                            icon="carbon:email"
+                            class="p-absolute"
+                            height="24"
+                            style="left: 1rem;"
+                        ></Icon>
+                        <input
+                            class="input email-input"
+                            bind:value={email}
+                            placeholder="Introduce tu email.."
+                            disabled={subscribed}
+                        />
+                        <button
+                            class="outline p-absolute sub-btn"
+                            on:click={subscribe}
+                            disabled={subscribed}
+                        >
+                            Suscribirse
+                        </button>
+                    </div>
+                    <div class="d-flex align-center justify-center">
+                        {#if emailError}<span class="error">
+                                {emailError}
+                            </span>{/if}
+                        {#if subscribed}<span class="success">
+                                ¡Gracias por suscribirte!
+                            </span>{/if}
+                    </div>
                 </div>
             </div>
-        </section>
-    </main>
-</div>
+        </div>
+    </div>
+</main>
 
 <style lang="scss">
-    li {
-        list-style: none;
+    .title {
+        a {
+            color: #fff;
+        }
+        font-size: 86px;
+        text-shadow:
+            3px 0 var(--primary),
+            -3px 0 var(--primary),
+            0 3px var(--primary),
+            0 -3px var(--primary),
+            3px 3px var(--primary),
+            -3px -3px var(--primary),
+            3px -3px var(--primary),
+            -3px 3px var(--primary);
+        margin-bottom: var(--spacing);
     }
-    input:disabled:checked {
-        background-color: var(--primary);
-        border-color: var(--primary);
-    }
-    .unchecked {
-        background-image: unset;
-        background-color: unset;
-    }
-    .subscribe {
-        margin-top: 100px;
-    }
-    section {
-        padding: 2em;
+
+    .info {
+        padding: calc(var(--spacing) * 2);
         background-color: rgba(255, 255, 255, 0.8);
-        border-radius: 1em;
-        margin: 2em;
+        border-radius: 1rem;
+        .unchecked {
+            background-image: unset;
+            background-color: unset;
+        }
+        p {
+            text-align: justify;
+            text-justify: inter-word;
+        }
+        ul {
+            padding: 0;
+        }
+        li {
+            list-style: none;
+        }
+        input:disabled:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+    }
+
+    .srch {
+        width: 100%;
+        height: fit-content;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        margin-bottom: var(--spacing);
+
+        .srch-box {
+            margin: 0;
+            padding-left: 55px;
+            background-color: white;
+            border-radius: 1rem;
+        }
+
+        .srch-btn {
+            position: absolute;
+            right: 8px;
+            button {
+                margin: 0;
+                padding: 0 1rem 0 1rem;
+                height: 40px;
+                border-radius: 1rem;
+            }
+        }
+    }
+
+    .email {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .email-input {
+            margin: 0;
+            padding-left: 55px;
+            border-radius: 1rem;
+        }
+        .sub-btn {
+            margin: 0;
+            padding: 0 1rem 0 1rem;
+            right: 8px;
+            width: fit-content;
+            height: 40px;
+            border-radius: 1rem;
+        }
+    }
+
+    @media only screen and (max-width: 768px) {
+        .info {
+            padding: var(--spacing);
+        }
+        .email-input {
+            font-size: 0.75rem;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .container {
+            max-width: 920px;
+        }
+    }
+
+    .error {
+        color: red;
+    }
+
+    .success {
+        color: green;
     }
 </style>

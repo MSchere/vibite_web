@@ -21,7 +21,7 @@
         "public": "build",
         "rewrites": [
             {
-                "source": "/dishes",
+                "source": "/platos",
                 "destination": "/dishes.html"
             },
             {
