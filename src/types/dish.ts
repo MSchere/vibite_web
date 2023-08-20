@@ -16,7 +16,7 @@ export enum NutrientNames {
 }
 
 export type Nutrients = {
-    ENERGY: NutrientInfo;
+    energy: NutrientInfo;
     carbs: NutrientInfo;
     fiber: NutrientInfo;
     satFat: NutrientInfo;
@@ -25,7 +25,6 @@ export type Nutrients = {
     salt: NutrientInfo;
     protein: NutrientInfo;
 };
-
 
 export type Dish = {
     name: string;

@@ -1,51 +1,57 @@
 <script script lang="ts">
+    import Modal from "$components/Modal.svelte";
+    import NutritionalInfo from "$components/NutritionalInfo.svelte";
+    import { filter } from "$lib/filter";
+    import { firestore } from "$lib/firebase";
+    import type { Dish } from "$types/dish";
+    import Icon from "@iconify/svelte";
     import {
+        QueryConstraint,
         collection,
         onSnapshot,
         orderBy,
         query,
-        where,
+        where
     } from "firebase/firestore";
-    import { firestore } from "$lib/firebase";
     import { onMount } from "svelte";
-    import Icon from "@iconify/svelte";
-    import Modal from "$components/Modal.svelte";
-    import NutritionalInfo from "$components/NutritionalInfo.svelte";
-    import type { Dish } from "$src/types/dish";
 
-    let activeDishes: Dish[] = [];
-    let inactiveDishes: Dish[] = [];
     let dishes: Dish[] = [];
     let selectedDish: Dish;
     let showModal = false;
 
-    onMount(async () => {
+    function loadDishes() {
+        const f = $filter;
+        const queryConditions: QueryConstraint[] = [];
         const dishesRef = collection(firestore, "dishes");
-        const activeDishesQuery = query(
+        f.search ? queryConditions.push(where("name", ">=", f.search)) : null;
+        f.priceRange ? queryConditions.push(where("price", ">=", f.priceRange[0])) : null;
+        f.priceRange ? queryConditions.push(where("price", "<=", f.priceRange[1])) : null;
+        f.nutrientRanges ? Object.entries(f.nutrientRanges).forEach(([nutrient, range]) => {
+            queryConditions.push(where(`nutrients.${nutrient}`, ">=", range[0]));
+            queryConditions.push(where(`nutrients.${nutrient}`, "<=", range[1]));
+        }) : null;
+        f.onlyAvailable ? queryConditions.push(where("isAvailable", "==", true)) : null;
+        f.onlyVegan ? queryConditions.push(where("isVegan", "==", true)) : null;
+        f.onlyLactoseFree ? queryConditions.push(where("isLactoseFree", "==", true)) : null;
+        f.onlyGlutenFree ? queryConditions.push(where("isGlutenFree", "==", true)) : null;
+        f.orderingCriteria ? queryConditions.push(orderBy(f.orderingCriteria, f.orderingDirection)) : null;
+        
+        const filterQuery = query(
             dishesRef,
-            where("isAvailable", "==", true),
-            orderBy("score", "desc"),
+            ...queryConditions
         );
-        const inactiveDishesQuery = query(
-            dishesRef,
-            where("isAvailable", "==", false),
-            orderBy("score", "desc"),
-        );
-        //subscribe to changes
-        onSnapshot(activeDishesQuery, (snapshot: any) => {
-            activeDishes = snapshot.docs.map((doc: any) => {
+
+        onSnapshot(filterQuery, (snapshot: any) => {
+            dishes = snapshot.docs.map((doc: any) => {
                 const dish = doc.data() as Dish;
                 return dish;
             });
-            dishes = activeDishes.concat(inactiveDishes);
         });
-        onSnapshot(inactiveDishesQuery, (snapshot: any) => {
-            inactiveDishes = snapshot.docs.map((doc: any) => {
-                const dish = doc.data() as Dish;
-                return dish;
-            });
-            dishes = activeDishes.concat(inactiveDishes);
-        });
+
+    }
+
+    onMount(async () => {
+        loadDishes();
     });
 
     function formatDate(timestamp: number): string {

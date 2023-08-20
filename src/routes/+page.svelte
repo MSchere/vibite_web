@@ -1,8 +1,8 @@
 <script script lang="ts">
-    import { httpsCallable } from "firebase/functions";
     import { functions } from "$lib/firebase";
     import { ErrorType } from "$types/error";
     import Icon from "@iconify/svelte";
+    import { httpsCallable } from "firebase/functions";
 
     let email = "";
     let emailError = "";
@@ -232,12 +232,12 @@
 
         .srch-btn {
             position: absolute;
-            right: 8px;
+            right: 10px;
             button {
                 margin: 0;
                 padding: 0 1rem 0 1rem;
                 height: 40px;
-                border-radius: 1rem;
+                border-radius: 0.85rem;
             }
         }
     }
@@ -255,10 +255,10 @@
         .sub-btn {
             margin: 0;
             padding: 0 1rem 0 1rem;
-            right: 8px;
+            right: 10px;
             width: fit-content;
             height: 40px;
-            border-radius: 1rem;
+            border-radius: 0.85rem;
         }
     }
 
