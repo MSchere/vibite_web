@@ -52,6 +52,14 @@
     display: inline-flex;
 }
 
+.d-block {
+    display: block;
+}
+
+.d-none {
+    display: none;
+}
+
 .flex-row {
     flex-direction: row;
 }
@@ -471,8 +479,12 @@
     overflow: hidden;
 }
 
-.text-uppercase {
-    text-transform: uppercase;
+.text-capitalize {
+    text-transform: capitalize;
+}
+
+.text-capitalize-first:first-letter {
+    text-transform: capitalize;
 }
 
 .text-center {

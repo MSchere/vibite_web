@@ -27,6 +27,7 @@ export type Nutrients = {
 };
 
 export type Dish = {
+    id: string;
     name: string;
     description: string;
     ingredients: string;

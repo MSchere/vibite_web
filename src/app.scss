@@ -4,6 +4,9 @@
 
 @import "@picocss/pico/scss/pico";
 
+body {
+    overflow: hidden;
+}
 a {
     text-decoration: unset;
     color: unset;
