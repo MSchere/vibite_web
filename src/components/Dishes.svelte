@@ -84,7 +84,7 @@
 </script>
 
 <main>
-    {#if dishes?.length > 0}
+    {#if dishes.length > 0}
         <div class={!$filter.isOpen ? "dishes" : "dishes dishes-sidebar"}>
             {#each dishes as dish}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -129,8 +129,8 @@
             {/each}
         </div>
     {:else}
-        <div class="dishes">
-            {#each { length: 9 } as _}
+        <div class="dishes vw-100">
+            {#each { length: 10 } as _}
                 <article class="dish shimmer"></article>
             {/each}
         </div>
