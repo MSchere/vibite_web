@@ -19,7 +19,7 @@
         where,
     } from "firebase/firestore";
 
-    let isLoading = true;
+    let firstLoad = true;
     let dishes: Dish[] = [];
     let selectedDish: Dish;
     let showModal = false;
@@ -28,7 +28,6 @@
     $: $orderingCriteria, loadDishes();
 
     function getFilterQuery() {
-        isLoading = true;
         const queryConditions: QueryConstraint[] = [];
         const dishesRef = collection(firestore, "dishes");
         $search ? queryConditions.push(where("name", ">=", $search)) : null;
@@ -61,8 +60,13 @@
                 queryConditions.push(where(nutrient, "<=", max));
             }
         }
-        for (let i = 0; i < $orderingCriteria.length; i++) { 
-            queryConditions.push(orderBy($orderingCriteria[i].field, $orderingCriteria[i].direction));
+        for (let i = 0; i < $orderingCriteria.length; i++) {
+            queryConditions.push(
+                orderBy(
+                    $orderingCriteria[i].field,
+                    $orderingCriteria[i].direction,
+                ),
+            );
         }
         const filterQuery = query(dishesRef, ...queryConditions);
         return filterQuery;
@@ -75,13 +79,12 @@
                 dishes = snapshot.docs.map((doc: any) => {
                     const dish = doc.data() as Dish;
                     dish.id = doc.id;
+                    if (dish) firstLoad = false;
                     return dish;
                 });
             });
-            isLoading = false;
         } catch (error) {
             console.error(error);
-            isLoading = false;
         }
     }
 
@@ -119,7 +122,7 @@
 
 <main>
     <!-- <button on:click={async (e) => {await updateAllnutrientsToLower()}}>Update all nutrients</button> -->
-    {#if dishes.length > 0 && !isLoading}
+    {#if dishes.length > 0}
         <div class={!$filter.isOpen ? "dishes" : "dishes dishes-sidebar"}>
             {#each dishes as dish}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -163,9 +166,9 @@
                 </article>
             {/each}
         </div>
-    {:else if isLoading}
+    {:else if firstLoad}
         <div class="dishes vw-100">
-            {#each { length: 10 } as _}
+            {#each { length: 15 } as _}
                 <article class="dish shimmer"></article>
             {/each}
         </div>
@@ -372,6 +375,11 @@
         }
     }
 
+    .shimmer {
+        height: 25vw;
+    }
+
+
     @media only screen and (max-width: 768px) {
         .dish {
             flex: 0 0 100%;
@@ -403,11 +411,12 @@
             bottom: 10%;
             left: 50%;
         }
+
+        .shimmer {
+            height: 60vh;
+        }
     }
 
-    .shimmer {
-        height: 45vh;
-    }
 
     .disabled {
         opacity: 0.5;
