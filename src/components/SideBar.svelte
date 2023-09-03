@@ -1,58 +1,104 @@
 <script lang="ts">
-    import Icon from "@iconify/svelte";
-    import { orderingCriteria, filter, Order, search } from "$src/lib/filters";
+    import {
+        NutrientValues100,
+        Order,
+        filter,
+        orderingCriteria,
+        search,
+    } from "$src/lib/filters";
     import { NutrientNames } from "$src/types/dish";
+    import Icon from "@iconify/svelte";
     let priceRange: [number, number] = [0, 0];
 
     let nutrientRanges: Record<NutrientNames, [number, number]> = {
-        [NutrientNames.ENERGY]: [0, 0],
-        [NutrientNames.FAT]: [0, 0],
-        [NutrientNames.SATFAT]: [0, 0],
-        [NutrientNames.PROTEIN]: [0, 0],
-        [NutrientNames.CARBS]: [0, 0],
-        [NutrientNames.FIBER]: [0, 0],
-        [NutrientNames.SUGAR]: [0, 0],
-        [NutrientNames.SALT]: [0, 0],
+        [NutrientNames.ENERGY]: [0, 900],
+        [NutrientNames.FAT]: [0, 100],
+        [NutrientNames.SATFAT]: [0, 100],
+        [NutrientNames.PROTEIN]: [0, 100],
+        [NutrientNames.CARBS]: [0, 100],
+        [NutrientNames.FIBER]: [0, 100],
+        [NutrientNames.SUGAR]: [0, 100],
+        [NutrientNames.SALT]: [0, 100],
     };
+
+    let checkedNutrients: Record<NutrientNames, boolean> = {
+        [NutrientNames.ENERGY]: false,
+        [NutrientNames.FAT]: false,
+        [NutrientNames.SATFAT]: false,
+        [NutrientNames.PROTEIN]: false,
+        [NutrientNames.CARBS]: false,
+        [NutrientNames.FIBER]: false,
+        [NutrientNames.SUGAR]: false,
+        [NutrientNames.SALT]: false,
+    };
+
+    $: checkedNutrients, updateNutrientRanges();
 
     function updateSearch(e: Event) {
         const srchValue = (e.target as HTMLInputElement).value.toLowerCase();
-        if ($orderingCriteria.field !== Order.NAME)
-            orderingCriteria.update((o) => ({ ...o, field: Order.NAME }));
-        search.update((s) => srchValue);
+        if ($orderingCriteria[0].field !== Order.NAME)
+            $orderingCriteria = [
+                { field: Order.NAME, direction: "asc" },
+                ...$orderingCriteria,
+            ];
+        $search = srchValue;
     }
+
     function updatePriceRange(e: Event) {
         const isChecked = (e.target as HTMLInputElement).checked;
         if (isChecked) {
-            if ($orderingCriteria.field !== Order.PRICE)
-                orderingCriteria.update((o) => ({ ...o, field: Order.PRICE }));
-            filter.update((f) => ({
-                ...f,
+            if ($orderingCriteria[0].field !== Order.PRICE)
+                $orderingCriteria = [
+                    { field: Order.PRICE, direction: "asc" },
+                    ...$orderingCriteria,
+                ];
+            $filter = {
+                ...$filter,
                 priceRange,
-            }));
+            };
         } else {
-            filter.update((f) => ({
-                ...f,
+            if ($orderingCriteria[0].field === Order.PRICE)
+                $orderingCriteria = $orderingCriteria.slice(1);
+            $filter = {
+                ...$filter,
                 priceRange: undefined,
-            }));
+            };
         }
     }
-    function updateNutrientRange(e: Event) {
-        const isChecked = (e.target as HTMLInputElement).checked;
-        if (isChecked) {
-            if ($orderingCriteria.field !== Order.ENERGY)
-                orderingCriteria.update((o) => ({ ...o, field: Order.ENERGY }));
-            filter.update((f) => ({
-                ...f,
-                nutrientRanges,
-            }));
-        } else {
-            filter.update((f) => ({
-                ...f,
-                nutrientRanges: undefined,
-            }));
-        }
 
+    function updateNutrientRanges() {
+        for (const [nutrient, [min, max]] of Object.entries(nutrientRanges)) {
+            const key =
+                Object.keys(NutrientNames).find(
+                    (k) => NutrientNames[k] === nutrient,
+                ) ?? "";
+            const dbField = NutrientValues100[key];
+            if (checkedNutrients[nutrient]) {
+                if ($orderingCriteria[0].field !== dbField)
+                    $orderingCriteria = [
+                        { field: dbField, direction: "desc" },
+                        ...$orderingCriteria,
+                    ];
+
+                $filter = {
+                    ...$filter,
+                    nutrientRanges: {
+                        ...$filter.nutrientRanges,
+                        [dbField]: [min, max],
+                    },
+                };
+            } else {
+                if ($orderingCriteria[0].field === dbField)
+                    $orderingCriteria = $orderingCriteria.slice(1);
+                $filter = {
+                    ...$filter,
+                    nutrientRanges: {
+                        ...$filter.nutrientRanges,
+                        [dbField]: [0, 0],
+                    },
+                };
+            }
+        }
     }
 </script>
 
@@ -79,13 +125,17 @@
             </li>
             <li>
                 <details open>
-                    <summary class="fw-bold">Precio (€)</summary>
+                    <summary class="fw-bold"
+                        >Precio <span class="fs-0-75">(€)</span></summary
+                    >
                     <div class="filter-range">
                         <div class="d-flex align-center gap-0-5">
                             <input
                                 class="range-input"
                                 type="number"
                                 min="0"
+                                max="20"
+                                step="0.5"
                                 placeholder="Min"
                                 bind:value={priceRange[0]}
                             />
@@ -94,6 +144,8 @@
                                 class="range-input"
                                 type="number"
                                 min="0"
+                                max="20"
+                                step="0.5"
                                 placeholder="Max"
                                 bind:value={priceRange[1]}
                             />
@@ -108,118 +160,195 @@
             </li>
             <li>
                 <details open>
-                    <summary class="fw-bold">Energía (Kcal)</summary>
+                    <summary class="fw-bold"
+                        >Energía <span class="fs-0-75">(Kcal / 100g)</span
+                        ></summary
+                    >
                     <div class="filter-range">
                         <div class="d-flex align-center gap-0-5">
                             <input
                                 class="range-input"
                                 type="number"
                                 min="0"
+                                max="500"
+                                step="25"
                                 placeholder="Min"
-                                bind:value={nutrientRanges[NutrientNames.ENERGY][0]}
+                                bind:value={nutrientRanges[
+                                    NutrientNames.ENERGY
+                                ][0]}
                             />
                             <span>to</span>
                             <input
                                 class="range-input"
                                 type="number"
                                 min="0"
+                                max="500"
+                                step="25"
                                 placeholder="Max"
-                                bind:value={nutrientRanges[NutrientNames.ENERGY][1]}
+                                bind:value={nutrientRanges[
+                                    NutrientNames.ENERGY
+                                ][1]}
                             />
                         </div>
-                        <input class="checkbox" type="checkbox"/>
+                        <input
+                            class="checkbox"
+                            type="checkbox"
+                            bind:checked={checkedNutrients[
+                                NutrientNames.ENERGY
+                            ]}
+                        />
                     </div>
                 </details>
             </li>
             <li>
                 <details>
-                    <summary class="fw-bold">Proteínas (g)</summary>
+                    <summary class="fw-bold"
+                        >Proteínas <span class="fs-0-75">(g / 100g)</span
+                        ></summary
+                    >
                     <div class="filter-range">
                         <div class="d-flex align-center gap-0-5">
                             <input
                                 class="range-input"
                                 type="number"
                                 min="0"
+                                max="100"
                                 placeholder="Min"
+                                bind:value={nutrientRanges[
+                                    NutrientNames.PROTEIN
+                                ][0]}
                             />
                             <span>to</span>
                             <input
                                 class="range-input"
                                 type="number"
                                 min="0"
+                                max="100"
                                 placeholder="Max"
+                                bind:value={nutrientRanges[
+                                    NutrientNames.PROTEIN
+                                ][1]}
                             />
                         </div>
-                        <input class="checkbox" type="checkbox" />
+                        <input
+                            class="checkbox"
+                            type="checkbox"
+                            bind:checked={checkedNutrients[
+                                NutrientNames.PROTEIN
+                            ]}
+                        />
                     </div>
                 </details>
             </li>
             <li>
                 <details>
-                    <summary class="fw-bold">Carbohidratos (g)</summary>
+                    <summary class="fw-bold"
+                        >Carbohidratos <span class="fs-0-75">(g / 100g)</span
+                        ></summary
+                    >
                     <div class="filter-range">
                         <div class="d-flex align-center gap-0-5">
                             <input
                                 class="range-input"
                                 type="number"
                                 min="0"
+                                max="100"
                                 placeholder="Min"
+                                bind:value={nutrientRanges[
+                                    NutrientNames.CARBS
+                                ][0]}
                             />
                             <span>to</span>
                             <input
                                 class="range-input"
                                 type="number"
                                 min="0"
+                                max="100"
                                 placeholder="Max"
+                                bind:value={nutrientRanges[
+                                    NutrientNames.CARBS
+                                ][1]}
                             />
                         </div>
-                        <input class="checkbox" type="checkbox" />
+                        <input
+                            class="checkbox"
+                            type="checkbox"
+                            bind:checked={checkedNutrients[NutrientNames.CARBS]}
+                        />
                     </div>
                 </details>
             </li>
             <li>
                 <details>
-                    <summary class="fw-bold">Grasas (g)</summary>
+                    <summary class="fw-bold"
+                        >Grasas <span class="fs-0-75">(g / 100g)</span></summary
+                    >
                     <div class="filter-range">
                         <div class="d-flex align-center gap-0-5">
                             <input
                                 class="range-input"
                                 type="number"
                                 min="0"
+                                max="100"
                                 placeholder="Min"
+                                bind:value={nutrientRanges[
+                                    NutrientNames.FAT
+                                ][0]}
                             />
                             <span>to</span>
                             <input
                                 class="range-input"
                                 type="number"
                                 min="0"
+                                max="100"
                                 placeholder="Max"
+                                bind:value={nutrientRanges[
+                                    NutrientNames.FAT
+                                ][1]}
                             />
                         </div>
-                        <input class="checkbox" type="checkbox" />
+                        <input
+                            class="checkbox"
+                            type="checkbox"
+                            bind:checked={checkedNutrients[NutrientNames.FAT]}
+                        />
                     </div>
                 </details>
             </li>
             <li>
                 <details>
-                    <summary class="fw-bold">Sal (g)</summary>
+                    <summary class="fw-bold"
+                        >Sal <span class="fs-0-75">(g / 100g)</span></summary
+                    >
                     <div class="filter-range">
                         <div class="d-flex align-center gap-0-5">
                             <input
                                 class="range-input"
                                 type="number"
                                 min="0"
+                                max="100"
                                 placeholder="Min"
+                                bind:value={nutrientRanges[
+                                    NutrientNames.SALT
+                                ][0]}
                             />
                             <span>to</span>
                             <input
                                 class="range-input"
                                 type="number"
                                 min="0"
+                                max="100"
                                 placeholder="Max"
+                                bind:value={nutrientRanges[
+                                    NutrientNames.SALT
+                                ][1]}
                             />
                         </div>
-                        <input class="checkbox" type="checkbox" />
+                        <input
+                            class="checkbox"
+                            type="checkbox"
+                            bind:checked={checkedNutrients[NutrientNames.SALT]}
+                        />
                     </div>
                 </details>
             </li>
@@ -293,10 +422,22 @@
             border-radius: 1rem;
         }
     }
+    details[open] > summary:not([role]):not(:focus) {
+        color: var(--accordion-close-summary-color);
+    }
+
     details {
         padding: 0.5rem;
         border-top: 1px solid var(--form-element-border-color);
-
+        border-bottom: none;
+        summary {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            span {
+                color: var(--accordion-open-summary-color);
+            }
+        }
         .filter-range {
             gap: 1.5rem;
             margin: 1rem 0 0 1rem;

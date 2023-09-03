@@ -324,12 +324,20 @@
     width: 100%;
 }
 
+.vw-100 {
+    width: 100vw;
+}
+
 .h-50 {
     height: 50%;
 }
 
 .h-100 {
     height: 100%;
+}
+
+.vh-100 {
+    height: 100vh;
 }
 
 .icon {
@@ -511,7 +519,4 @@
     cursor: default;
 }
 
-.vw-100 {
-    width: 100vw;
-}
 /* Utilities end */

@@ -26,6 +26,13 @@ export type Nutrients = {
     protein: NutrientInfo;
 };
 
+export type Rating = {
+    average: number;
+    count: number;
+};
+
+export type NutriScore = "A" | "B" | "C" | "D" | "E";
+
 export type Dish = {
     id: string;
     name: string;
@@ -39,8 +46,9 @@ export type Dish = {
     isGlutenFree: boolean;
     isVegan: boolean;
     isLactoseFree: boolean;
-    nutriScore: string;
+    nutriScore: NutriScore;
     score: number;
     isAvailable: boolean;
     updatedAt: number;
+    rating: Rating;
 };

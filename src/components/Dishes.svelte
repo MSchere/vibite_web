@@ -1,8 +1,13 @@
 <script script lang="ts">
     import Modal from "$components/Modal.svelte";
     import NutritionalInfo from "$components/NutritionalInfo.svelte";
-    import { filter, search, orderingCriteria } from "$src/lib/filters";
     import { firestore } from "$lib/firebase";
+    import {
+        filter,
+        orderingCriteria,
+        resetAll,
+        search,
+    } from "$src/lib/filters";
     import type { Dish } from "$types/dish";
     import Icon from "@iconify/svelte";
     import {
@@ -14,35 +19,27 @@
         where,
     } from "firebase/firestore";
 
+    let isLoading = true;
     let dishes: Dish[] = [];
     let selectedDish: Dish;
     let showModal = false;
     $: $filter, loadDishes();
     $: $search, loadDishes();
     $: $orderingCriteria, loadDishes();
-    function loadDishes() {
+
+    function getFilterQuery() {
+        isLoading = true;
         const queryConditions: QueryConstraint[] = [];
         const dishesRef = collection(firestore, "dishes");
         $search ? queryConditions.push(where("name", ">=", $search)) : null;
-        $search ? queryConditions.push(where("name", "<=", $search + "\uf8ff"))
+        $search
+            ? queryConditions.push(where("name", "<=", $search + "\uf8ff"))
             : null;
         $filter.priceRange
             ? queryConditions.push(where("price", ">=", $filter.priceRange[0]))
             : null;
         $filter.priceRange
             ? queryConditions.push(where("price", "<=", $filter.priceRange[1]))
-            : null;
-        $filter.nutrientRanges
-            ? Object.entries($filter.nutrientRanges).forEach(
-                  ([nutrient, range]) => {
-                      queryConditions.push(
-                          where(`nutrients.${nutrient}`, ">=", range[0]),
-                      );
-                      queryConditions.push(
-                          where(`nutrients.${nutrient}`, "<=", range[1]),
-                      );
-                  },
-              )
             : null;
         $filter.onlyAvailable
             ? queryConditions.push(where("isAvailable", "==", true))
@@ -56,18 +53,36 @@
         $filter.onlyGlutenFree
             ? queryConditions.push(where("isGlutenFree", "==", true))
             : null;
-        queryConditions.push(
-            orderBy($orderingCriteria.field, $orderingCriteria.direction),
-        );
+        for (const [nutrient, [min, max]] of Object.entries(
+            $filter.nutrientRanges,
+        )) {
+            if (min !== 0 || max !== 0) {
+                queryConditions.push(where(nutrient, ">=", min));
+                queryConditions.push(where(nutrient, "<=", max));
+            }
+        }
+        for (let i = 0; i < $orderingCriteria.length; i++) { 
+            queryConditions.push(orderBy($orderingCriteria[i].field, $orderingCriteria[i].direction));
+        }
         const filterQuery = query(dishesRef, ...queryConditions);
+        return filterQuery;
+    }
 
-        onSnapshot(filterQuery, (snapshot: any) => {
-            dishes = snapshot.docs.map((doc: any) => {
-                const dish = doc.data() as Dish;
-                dish.id = doc.id;
-                return dish;
+    function loadDishes() {
+        try {
+            const filterQuery = getFilterQuery();
+            onSnapshot(filterQuery, (snapshot: any) => {
+                dishes = snapshot.docs.map((doc: any) => {
+                    const dish = doc.data() as Dish;
+                    dish.id = doc.id;
+                    return dish;
+                });
             });
-        });
+            isLoading = false;
+        } catch (error) {
+            console.error(error);
+            isLoading = false;
+        }
     }
 
     function formatDate(timestamp: number): string {
@@ -81,10 +96,30 @@
         const seconds = date.getSeconds();
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     }
+
+    // async function updateAllnutrientsToLower() {
+    //     const allDishes = collection(firestore, "dishes");
+    //     onSnapshot(allDishes, (snapshot: any) => {
+    //         snapshot.docs.forEach(async (doc: any) => {
+    //             const dish = doc.data() as Dish;
+    //             const nutrients = dish.nutrients;
+    //             const newNutrients = {};
+    //             console.log("UPDATING", dish.name);
+    //             for (const [nutrient, value] of Object.entries(nutrients)) {
+    //                 if (nutrient === "SATFAT")
+    //                     newNutrients["satFat"] = value;
+    //                 else
+    //                     newNutrients[nutrient.toLowerCase()] = value;
+    //             }
+    //             await updateDoc(doc.ref, { nutrients: newNutrients });
+    //         });
+    //     });
+    // }
 </script>
 
 <main>
-    {#if dishes.length > 0}
+    <!-- <button on:click={async (e) => {await updateAllnutrientsToLower()}}>Update all nutrients</button> -->
+    {#if dishes.length > 0 && !isLoading}
         <div class={!$filter.isOpen ? "dishes" : "dishes dishes-sidebar"}>
             {#each dishes as dish}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -128,11 +163,20 @@
                 </article>
             {/each}
         </div>
-    {:else}
+    {:else if isLoading}
         <div class="dishes vw-100">
             {#each { length: 10 } as _}
                 <article class="dish shimmer"></article>
             {/each}
+        </div>
+    {:else}
+        <div class="vw-100 vh-100">
+            <div class="reset-filters-box">
+                <h4 class="w-100">
+                    No hay platos disponibles con los filtros seleccionados
+                </h4>
+                <button on:click={() => resetAll()}> Resetear filtros </button>
+            </div>
         </div>
     {/if}
 </main>
@@ -312,6 +356,22 @@
         }
     }
 
+    .reset-filters-box {
+        width: 480px;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        h4 {
+            margin: 0;
+        }
+    }
+
     @media only screen and (max-width: 768px) {
         .dish {
             flex: 0 0 100%;
@@ -336,6 +396,12 @@
             img {
                 width: 100%;
             }
+        }
+        .reset-filters-box {
+            position: fixed;
+            top: unset;
+            bottom: 10%;
+            left: 50%;
         }
     }
 

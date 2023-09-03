@@ -1,10 +1,10 @@
 <script lang="ts">
 
     import {
-        type Nutrients,
-        type NutrientInfo,
-        type Dish,
         NutrientNames,
+        type Dish,
+        type NutrientInfo,
+        type Nutrients,
     } from "$src/types/dish";
     export let selectedDish: Dish;
 
@@ -22,7 +22,7 @@
         ];
         const formattedNutrients = nutrientsOrder.map((nutrient) => {
             const nutrientValue = nutrientsArray.find(
-                (nutrientArray) => NutrientNames[nutrientArray[0]] === nutrient,
+                (nutrientArray) => NutrientNames[nutrientArray[0].toUpperCase()] === nutrient,
             ) || [
                 "NULL",
                 {
@@ -46,7 +46,7 @@
         </tr>
         {#each orderNutrients(selectedDish?.nutrients) as nutrient}
             <tr class="d-flex gap-0-5">
-                <td class="fw-bold">{`${NutrientNames[nutrient[0]]}:`}</td>
+                <td class="fw-bold">{`${NutrientNames[nutrient[0].toUpperCase()]}:`}</td>
                 <td>
                     {`${nutrient[1].value100} ${nutrient[1].unit}`}
                 </td>

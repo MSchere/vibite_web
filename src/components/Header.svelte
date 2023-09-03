@@ -6,13 +6,24 @@
         orderingCriteria,
     } from "$src/lib/filters";
     import Icon from "@iconify/svelte";
+
+    function toggleOrderingCriteria() {
+        $orderingCriteria = [
+            {
+                field: $orderingCriteria[0].field,
+                direction:
+                    $orderingCriteria[0].direction === "asc" ? "desc" : "asc",
+            },
+            ...$orderingCriteria.slice(1),
+        ];
+    }
 </script>
 
 <nav>
     <ul>
         <li>
             <button
-                class={ !$filter.isOpen ? "filter-btn" : "filter-btn-clicked"}
+                class={!$filter.isOpen ? "filter-btn" : "filter-btn-clicked"}
                 on:click={() =>
                     filter.update((f) => ({ ...f, isOpen: !f.isOpen }))}
             >
@@ -31,27 +42,39 @@
         <li>
             <details role="list">
                 <summary>
-                    <Icon
-                        icon="mi:sort"
-                        class="p-absolute"
-                        height="24"
-                        color="#e84142"
-                        style="left: 1rem; top:0.35rem;">
-                    </Icon>
-                    {OrderTranslation[$orderingCriteria.field]}</summary>
+                    <button on:click={toggleOrderingCriteria}>
+                        {#if $orderingCriteria[0].direction === "asc"}
+                            <Icon icon="mi:arrow-up" height="24" color="#e84142"
+                            ></Icon>
+                        {:else}
+                            <Icon
+                                icon="mi:arrow-down"
+                                height="24"
+                                color="#e84142"
+                            ></Icon>
+                        {/if}
+                    </button>
+                    {OrderTranslation[$orderingCriteria[0].field]}</summary
+                >
                 <ul role="listbox">
                     {#each Object.entries(Order) as [order, value]}
-                        <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-                        <!-- svelte-ignore a11y-click-events-have-key-events -->
-                        <li
-                            on:click={() =>
-                                orderingCriteria.update((o) => ({
-                                    ...o,
-                                    field: value,
-                                }))}
-                        >
-                            {OrderTranslation[value]}
-                        </li>
+                        {#if OrderTranslation[value]}
+                            <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                            <li
+                                on:click={() =>
+                                    ($orderingCriteria = [
+                                        {
+                                            field: value,
+                                            direction:
+                                                $orderingCriteria[0].direction,
+                                        },
+                                        ...$orderingCriteria.slice(1),
+                                    ])}
+                            >
+                                {OrderTranslation[value]}
+                            </li>
+                        {/if}
                     {/each}
                 </ul>
             </details>
@@ -83,7 +106,6 @@
     }
 
     details {
-        width: 240px;
         border: 3px solid var(--primary);
         color: var(--primary);
         font-weight: bold;
@@ -92,14 +114,32 @@
         margin: 0 1rem 0 1rem;
         padding: 0.2rem 0 0.2rem 0;
         summary {
-            display: block;
-            margin: 0 1rem 0 3rem;
+            min-width: 200px;
+            display: flex;
+            margin: 0 1rem 0 1rem;
             padding: 0 !important;
             border: none;
             color: var(--primary);
             padding: 0;
             &:focus {
                 box-shadow: unset;
+            }
+            &:after {
+                position: absolute;
+                right: 1rem;
+            }
+            button {
+                width: 32px;
+                margin-right: 1rem;
+                align-items: center;
+                border-radius: 0.55rem;
+                border: 3px solid var(--primary);
+                display: flex;
+                justify-content: center;
+                &:hover {
+                    background-color: var(--primary);
+                    color: white;
+                }
             }
         }
         ul {

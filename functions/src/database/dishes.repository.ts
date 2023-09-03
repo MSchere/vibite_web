@@ -20,6 +20,20 @@ export class DishesRepository {
         return await dishesRef.add(dish);
     }
 
+    static async updateDish(dish: Dish): Promise<void> {
+        const dishesRef = this.getDishesCollection();
+        const dishRef = dishesRef.doc(dish.id);
+        await dishRef.update(dish);
+    }
+
+    static async updateDishes(dishes: Dish[]): Promise<void> {
+        const dishesRef = this.getDishesCollection();
+        dishes.forEach(async (dish) => {
+            const dishRef = dishesRef.doc(dish.id);
+            await dishRef.update(dish);
+        });
+    }
+
     static async disbleDishes(): Promise<void> {
         const dishesRef = this.getDishesCollection();
         const dishesSnapshot = await dishesRef.get();
