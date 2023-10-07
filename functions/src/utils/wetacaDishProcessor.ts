@@ -1,96 +1,44 @@
+
 import { Dish } from "$root/src/types/dish";
-import { WetacaDishDto } from "src/dtos/wetaca-dish.dto";
+import { logger } from "firebase-functions/v2";
+import { WetacaDishDto } from "src/dtos/wetacaDish.dto";
 import { calculateNutriScore } from "./calculators";
 
 export class WetacaDishProcessor {
     private static readonly WETACA_API_URL = "https://api.wetaca.com/graphql";
     private static readonly WETACA_DISHES_QUERY = `
-    query menu(
-        $salesPlanId: ModelId, 
-        $salesPlanPackageOptionIndex: Int,
-        $zipcode: Int,
-        $includeDishes: [Int!]
-      ) {
-        menu(
-          salesPlanId: $salesPlanId
-          salesPlanPackageOptionIndex: $salesPlanPackageOptionIndex  
-          zipcode: $zipcode
-          includeDishes: $includeDishes  
-        ) {
-          id
-          dateFrom
-          dateTo 
-          extended
-          dishes {
-            datePublished
-            id  
-            name
-            slug
-            price
-            subscriptionPrice
-            category {
-              _id
-              id: slug   
-              name
-              slug
-              description
-              order
-              subscriptionPrice
-            }
-            tags
-            ingredients
-            ingredientsBreakdown
-            allergens
-            isNew
-            features
-            specialTemplate
-            rating {
-              averageRating
-              reviewCount  
-            }
-            isPromoted
-            frontPage
-            weight
-            nutritionFacts {
-              energy
-              totalFat
-              saturatedFat
-              proteins
-              hydrates
-              sugars
-              fiber 
-              salt
-            }
-          }
-          otherDishes {
-            # same fields as dishes
-          }
-        }
-      }
-    `;
+    query menu($salesPlanId: ModelId, $salesPlanPackageOptionIndex: Int, $zipcode: Int, $includeDishes: [Int!]) {\n  menu(\n    salesPlanId: $salesPlanId\n    salesPlanPackageOptionIndex: $salesPlanPackageOptionIndex\n    zipcode: $zipcode\n    includeDishes: $includeDishes\n  ) {\n    id\n    dateFrom\n    dateTo\n    extended\n    dishes {\n      datePublished\n      id\n      name\n      slug\n      price\n      subscriptionPrice\n      category {\n        _id\n        id: slug\n        name\n        slug\n        description\n        order\n        subscriptionPrice\n        __typename\n      }\n      tags\n      ingredients\n      ingredientsBreakdown\n      allergens\n      isNew\n      features\n      specialTemplate\n      rating {\n        averageRating\n        reviewCount\n        __typename\n      }\n      isPromoted\n      frontPage\n      weight\n      nutritionFacts {\n        energy\n        totalFat\n        saturatedFat\n        proteins\n        hydrates\n        sugars\n        fiber\n        salt\n        __typename\n      }\n      __typename\n    }\n    otherDishes {\n      datePublished\n      id\n      name\n      slug\n      price\n      subscriptionPrice\n      category {\n        _id\n        id: slug\n        name\n        slug\n        description\n        order\n        subscriptionPrice\n        __typename\n      }\n      tags\n      ingredients\n      ingredientsBreakdown\n      allergens\n      isNew\n      features\n      specialTemplate\n      rating {\n        averageRating\n        reviewCount\n        __typename\n      }\n      isPromoted\n      frontPage\n      weight\n      nutritionFacts {\n        energy\n        totalFat\n        saturatedFat\n        proteins\n        hydrates\n        sugars\n        fiber\n        salt\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n`;
 
     static async getAndProcessDishes(): Promise<Dish[]> {
         const wetacaDishes = await this.getDishes();
+        if (wetacaDishes.length === 0)
+            throw new Error("Error getting Wetaca dishes");
         return wetacaDishes.map((wetacaDish) => this.processDish(wetacaDish));
     }
 
     static async getDishes(): Promise<WetacaDishDto[]> {
         try {
+            const body = JSON.stringify({
+                operationName: "menu",
+                query: WetacaDishProcessor.WETACA_DISHES_QUERY,
+                variables: {},
+            });
             const response = await fetch(WetacaDishProcessor.WETACA_API_URL, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Content-Length": `${Buffer.byteLength(body)}`,
+                    "User-Agent": "ViBite V1.0",
+                    "Host": "www.wetaca.com"
                 },
-                body: JSON.stringify({
-                    operationName: "menu",
-                    query: WetacaDishProcessor.WETACA_DISHES_QUERY,
-                    variables: {},
-                }),
+                body
             });
             const json = await response.json();
+            logger.log("REPONSE FROM WETACA", response);
+            logger.log("JSON RESPONSE FROM WETACA", json);
             return json.data.menu.dishes as WetacaDishDto[];
         } catch (error: any) {
-            console.error(error);
+            logger.error(error);
             return [];
         }
     }

@@ -19,6 +19,8 @@
         where,
     } from "firebase/firestore";
 
+    
+
     let firstLoad = true;
     let dishes: Dish[] = [];
     let selectedDish: Dish;
@@ -118,10 +120,20 @@
     //         });
     //     });
     // }
+
+    //call callable cloud function
+    // async function updateDishesOnServer() {
+    //     const functionUrl = "https://europe-west1-vibite-3ab78.cloudfunctions.net/updateDishesCallable"; 
+    //     const functions = getFunctions();
+    //     const updateDishesCallable = httpsCallableFromURL(functions, functionUrl);
+    //     const response = await updateDishesCallable();
+    //     console.log("update dishes response", response);
+    // }
 </script>
 
 <main>
     <!-- <button on:click={async (e) => {await updateAllnutrientsToLower()}}>Update all nutrients</button> -->
+    <!-- <button on:click={async (e) => {await updateDishesOnServer()}}>Update dishes on server</button>    -->
     {#if dishes.length > 0}
         <div class={!$filter.isOpen ? "dishes" : "dishes dishes-sidebar"}>
             {#each dishes as dish}
