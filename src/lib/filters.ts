@@ -15,14 +15,14 @@ export enum Order {
     PRICE = "price",
     UPDATED_AT = "updatedAt",
     NAME = "name",
-    ENERGY = NutrientValues100.ENERGY,
-    FAT = NutrientValues100.FAT,
-    SATFAT = NutrientValues100.SATFAT,
-    PROTEIN = NutrientValues100.PROTEIN,
-    CARBS = NutrientValues100.CARBS,
-    FIBER = NutrientValues100.FIBER,
-    SUGAR = NutrientValues100.SUGAR,
-    SALT = NutrientValues100.SALT,
+    ENERGY = "nutrients.energy.value100",
+    FAT = "nutrients.fat.value100",
+    SATFAT = "nutrients.satFat.value100",
+    PROTEIN = "nutrients.protein.value100",
+    CARBS = "nutrients.carbs.value100",
+    FIBER = "nutrients.fiber.value100",
+    SUGAR = "nutrients.sugar.value100",
+    SALT = "nutrients.salt.value100",
 }
 
 export const OrderTranslation = {

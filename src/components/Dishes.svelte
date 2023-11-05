@@ -179,13 +179,13 @@
             {/each}
         </div>
     {:else if firstLoad}
-        <div class="dishes vw-100">
+        <div class="dishes w-100vw">
             {#each { length: 15 } as _}
                 <article class="dish shimmer"></article>
             {/each}
         </div>
     {:else}
-        <div class="vw-100 vh-100">
+        <div class="w-100vw h-100vh">
             <div class="reset-filters-box">
                 <h4 class="w-100">
                     No hay platos disponibles con los filtros seleccionados
@@ -215,33 +215,37 @@
             {/if}
         </div>
         <div class="dish-more-info">
-            <div class="desktop">
+            <div class="d-block d-md-none ">
                 <div class="d-flex gap-0-5">
                     <span class="fw-bold">Ingredientes: </span>
                     <p class="text-capitalize-first">
                         {selectedDish?.ingredients}
                     </p>
                 </div>
+                {#if selectedDish?.allergens}
                 <div class="d-flex gap-0-5">
                     <span class="fw-bold">Alérgenos: </span>
                     <p class="text-capitalize-first">
                         {selectedDish?.allergens}
                     </p>
                 </div>
+                {/if}
             </div>
-            <details class="mobile w-100">
+            <details class="d-none d-md-block w-100">
                 <summary class="fw-bold">Ingredientes</summary>
                 <div class="d-flex gap-0-5">
                     <p class="text-capitalize-first">
                         {selectedDish?.ingredients}
                     </p>
                 </div>
+                {#if selectedDish?.allergens}
                 <div class="d-flex gap-0-5">
                     <span class="fw-bold">Alérgenos: </span>
                     <p class="text-capitalize-first">
                         {selectedDish?.allergens}
                     </p>
                 </div>
+                {/if}
             </details>
         </div>
         <a href={selectedDish?.dishUrl} target="_blank" rel="noopener">
@@ -255,7 +259,7 @@
 
 <style lang="scss">
     main {
-        height: 100vh;
+        height: calc(100vh - var(--header-height));
         overflow: auto;
         padding: 0.5rem 0 0.5rem 0.5rem;
     }

@@ -1,9 +1,51 @@
 $primary-500: #e84142;
 $primary-600: #d63031;
 $primary-700: #c22e2a;
+$secondary-500: #f1f2f6;
+$secondary-600: #f5f6fa;
+$secondary-700: #dcdde1;
+
+/* Breakpoints */
+$container-max-widths: (
+    sm: 576px,
+    md: 768px,
+    lg: 1024px,
+    xl: 1280px,
+    xxl: 1440px,
+    fhd: 1920px,
+    uw: 2560px,
+) !default;
+
+@mixin media-breakpoint-down($point) {
+    @media (max-width: map-get($container-max-widths, $point)) {
+        @content;
+    }
+}
+
+@mixin media-breakpoint-between($start, $end) {
+    @media (min-width: map-get($container-max-widths, $start)) and (max-width: map-get($container-max-widths, $end)) {
+        @content;
+    }
+}
+
+@mixin media-breakpoint-up($point) {
+    @media (min-width: map-get($container-max-widths, $point)) {
+        @content;
+    }
+}
+
+$width-sm: map-get($container-max-widths, sm);
+$width-md: map-get($container-max-widths, md);
+$width-lg: map-get($container-max-widths, lg);
+$width-xl: map-get($container-max-widths, xl);
+$width-xxl: map-get($container-max-widths, xxl);
+$width-fhd: map-get($container-max-widths, fhd);
+$width-uw: map-get($container-max-widths, uw);
+
 
 :root {
     --template-columns: 5;
+    --header-height: 65px;
 }
 
 @media screen and (max-width: 1440px) {

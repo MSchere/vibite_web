@@ -23,17 +23,17 @@
     <ul>
         <li>
             <button
-                class={!$filter.isOpen ? "filter-btn" : "filter-btn-clicked"}
+                class={!$filter.isOpen ? "filter-btn" : "filter-btn clicked"}
                 on:click={() =>
                     filter.update((f) => ({ ...f, isOpen: !f.isOpen }))}
             >
-                <Icon icon="carbon:filter" height="48" color="#e84142"></Icon>
+                <Icon icon="carbon:filter" height="48" color="#f5f6fa"></Icon>
             </button>
         </li>
     </ul>
     <ul>
         <li class="absolute-center">
-            <h1 class="title primary">
+            <h1 class="title fc-white">
                 <a href="/"> ViBite </a>
             </h1>
         </li>
@@ -44,13 +44,13 @@
                 <summary>
                     <button on:click={toggleOrderingCriteria}>
                         {#if $orderingCriteria[0].direction === "asc"}
-                            <Icon icon="mi:arrow-up" height="24" color="#e84142"
+                            <Icon icon="mi:arrow-up" height="24" color="#f5f6fa"
                             ></Icon>
                         {:else}
                             <Icon
                                 icon="mi:arrow-down"
                                 height="24"
-                                color="#e84142"
+                                color="#f5f6fa"
                             ></Icon>
                         {/if}
                     </button>
@@ -82,7 +82,7 @@
         <li>
             <div>
                 <button class="profile-btn">
-                    <Icon icon="carbon:user" height="48" color="#e84142"></Icon>
+                    <Icon icon="carbon:user" height="48" color="#f5f6fa"></Icon>
                 </button>
             </div>
         </li>
@@ -96,7 +96,8 @@
         position: sticky;
         top: 0;
         z-index: 10;
-        background-color: white;
+        min-height: var(--header-height);
+        background-color: var(--primary);
     }
 
     .absolute-center {
@@ -106,8 +107,8 @@
     }
 
     details {
-        border: 3px solid var(--primary);
-        color: var(--primary);
+        border: 3px solid white;
+        color: white;
         font-weight: bold;
         background-color: transparent;
         border-radius: 0.85rem;
@@ -119,14 +120,16 @@
             margin: 0 1rem 0 1rem;
             padding: 0 !important;
             border: none;
-            color: var(--primary);
+            color: white;
             padding: 0;
             &:focus {
                 box-shadow: unset;
+                color: white;
             }
             &:after {
                 position: absolute;
                 right: 1rem;
+                color: white;
             }
             button {
                 width: 32px;
@@ -160,19 +163,18 @@
         }
     }
     .profile-btn {
-        border: 3px solid var(--primary);
+        border: 3px solid white;
         border-radius: 50%;
         background-color: transparent;
     }
     .filter-btn {
-        border: 3px solid var(--primary);
+        border: 3px solid white;
         border-radius: 0.85rem;
         background-color: transparent;
     }
-    .filter-btn-clicked {
-        border: 5px solid var(--primary);
+    .filter-btn.clicked {
+        border: 5px solid white;
         border-radius: 0.85rem;
-        box-shadow: 0 0 0 3px var(--primary);
     }
 
     button {

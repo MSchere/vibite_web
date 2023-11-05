@@ -36,7 +36,7 @@
 
     function updateSearch(e: Event) {
         const srchValue = (e.target as HTMLInputElement).value.toLowerCase();
-        if ($orderingCriteria.field !== Order.NAME)
+        if ($orderingCriteria[0].field !== Order.NAME)
             orderingCriteria.update((o) => ({ ...o, field: Order.NAME }));
         search.update((s) => srchValue);
     }
@@ -48,7 +48,7 @@
             <h1 class="title">
                 <a href="/dishes"> ViBite </a>
             </h1>
-            <div class="srch">
+            <form class="srch">
                 <Icon
                     icon="carbon:search"
                     class="p-absolute"
@@ -63,10 +63,10 @@
                 />
                 <div class="srch-btn">
                     <a href="/dishes">
-                        <button class="">Buscar</button>
+                        <button type="submit">Buscar</button>
                     </a>
                 </div>
-            </div>
+            </form>
         </div>
         <div class="info container">
             <div class="section">
@@ -146,7 +146,7 @@
                     > en los avances del proyecto!
                 </p>
                 <div class="d-flex flex-column">
-                    <div class="email">
+                    <form class="email">
                         <Icon
                             icon="carbon:email"
                             class="p-absolute"
@@ -161,12 +161,13 @@
                         />
                         <button
                             class="outline p-absolute sub-btn"
+                            type="submit"
                             on:click={subscribe}
                             disabled={subscribed}
                         >
                             Suscribirse
                         </button>
-                    </div>
+                    </form>
                     <div class="d-flex align-center justify-center">
                         {#if emailError}<span class="error">
                                 {emailError}
