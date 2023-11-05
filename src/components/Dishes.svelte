@@ -2,24 +2,10 @@
     import Modal from "$components/Modal.svelte";
     import NutritionalInfo from "$components/NutritionalInfo.svelte";
     import { firestore } from "$lib/firebase";
-    import {
-        filter,
-        orderingCriteria,
-        resetAll,
-        search,
-    } from "$src/lib/filters";
+    import { filter, orderingCriteria, resetAll, search } from "$src/lib/filters";
     import type { Dish } from "$types/dish";
     import Icon from "@iconify/svelte";
-    import {
-        QueryConstraint,
-        collection,
-        onSnapshot,
-        orderBy,
-        query,
-        where,
-    } from "firebase/firestore";
-
-    
+    import { QueryConstraint, collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
 
     let firstLoad = true;
     let dishes: Dish[] = [];
@@ -33,42 +19,21 @@
         const queryConditions: QueryConstraint[] = [];
         const dishesRef = collection(firestore, "dishes");
         $search ? queryConditions.push(where("name", ">=", $search)) : null;
-        $search
-            ? queryConditions.push(where("name", "<=", $search + "\uf8ff"))
-            : null;
-        $filter.priceRange
-            ? queryConditions.push(where("price", ">=", $filter.priceRange[0]))
-            : null;
-        $filter.priceRange
-            ? queryConditions.push(where("price", "<=", $filter.priceRange[1]))
-            : null;
-        $filter.onlyAvailable
-            ? queryConditions.push(where("isAvailable", "==", true))
-            : null;
-        $filter.onlyVegan
-            ? queryConditions.push(where("isVegan", "==", true))
-            : null;
-        $filter.onlyLactoseFree
-            ? queryConditions.push(where("isLactoseFree", "==", true))
-            : null;
-        $filter.onlyGlutenFree
-            ? queryConditions.push(where("isGlutenFree", "==", true))
-            : null;
-        for (const [nutrient, [min, max]] of Object.entries(
-            $filter.nutrientRanges,
-        )) {
+        $search ? queryConditions.push(where("name", "<=", $search + "\uf8ff")) : null;
+        $filter.priceRange ? queryConditions.push(where("price", ">=", $filter.priceRange[0])) : null;
+        $filter.priceRange ? queryConditions.push(where("price", "<=", $filter.priceRange[1])) : null;
+        $filter.onlyAvailable ? queryConditions.push(where("isAvailable", "==", true)) : null;
+        $filter.onlyVegan ? queryConditions.push(where("isVegan", "==", true)) : null;
+        $filter.onlyLactoseFree ? queryConditions.push(where("isLactoseFree", "==", true)) : null;
+        $filter.onlyGlutenFree ? queryConditions.push(where("isGlutenFree", "==", true)) : null;
+        for (const [nutrient, [min, max]] of Object.entries($filter.nutrientRanges)) {
             if (min !== 0 || max !== 0) {
                 queryConditions.push(where(nutrient, ">=", min));
                 queryConditions.push(where(nutrient, "<=", max));
             }
         }
         for (let i = 0; i < $orderingCriteria.length; i++) {
-            queryConditions.push(
-                orderBy(
-                    $orderingCriteria[i].field,
-                    $orderingCriteria[i].direction,
-                ),
-            );
+            queryConditions.push(orderBy($orderingCriteria[i].field, $orderingCriteria[i].direction));
         }
         const filterQuery = query(dishesRef, ...queryConditions);
         return filterQuery;
@@ -123,7 +88,7 @@
 
     //call callable cloud function
     // async function updateDishesOnServer() {
-    //     const functionUrl = "https://europe-west1-vibite-3ab78.cloudfunctions.net/updateDishesCallable"; 
+    //     const functionUrl = "https://europe-west1-vibite-3ab78.cloudfunctions.net/updateDishesCallable";
     //     const functions = getFunctions();
     //     const updateDishesCallable = httpsCallableFromURL(functions, functionUrl);
     //     const response = await updateDishesCallable();
@@ -149,9 +114,7 @@
                     <img src={dish.imageUrl} alt={dish.name} />
                     <div class="p-0-5">
                         <div class="d-flex align-center">
-                            <div
-                                class="d-flex align-center p-absolute gap-0-5 top-0 right-0"
-                            >
+                            <div class="d-flex align-center p-absolute gap-0-5 top-0 right-0">
                                 <span class="score">
                                     {`${dish.score} / 10`}
                                 </span>
@@ -187,9 +150,7 @@
     {:else}
         <div class="w-100vw h-100vh">
             <div class="reset-filters-box">
-                <h4 class="w-100">
-                    No hay platos disponibles con los filtros seleccionados
-                </h4>
+                <h4 class="w-100">No hay platos disponibles con los filtros seleccionados</h4>
                 <button on:click={() => resetAll()}> Resetear filtros </button>
             </div>
         </div>
@@ -215,7 +176,7 @@
             {/if}
         </div>
         <div class="dish-more-info">
-            <div class="d-block d-md-none ">
+            <div class="d-block d-md-none">
                 <div class="d-flex gap-0-5">
                     <span class="fw-bold">Ingredientes: </span>
                     <p class="text-capitalize-first">
@@ -223,12 +184,12 @@
                     </p>
                 </div>
                 {#if selectedDish?.allergens}
-                <div class="d-flex gap-0-5">
-                    <span class="fw-bold">Alérgenos: </span>
-                    <p class="text-capitalize-first">
-                        {selectedDish?.allergens}
-                    </p>
-                </div>
+                    <div class="d-flex gap-0-5">
+                        <span class="fw-bold">Alérgenos: </span>
+                        <p class="text-capitalize-first">
+                            {selectedDish?.allergens}
+                        </p>
+                    </div>
                 {/if}
             </div>
             <details class="d-none d-md-block w-100">
@@ -239,12 +200,12 @@
                     </p>
                 </div>
                 {#if selectedDish?.allergens}
-                <div class="d-flex gap-0-5">
-                    <span class="fw-bold">Alérgenos: </span>
-                    <p class="text-capitalize-first">
-                        {selectedDish?.allergens}
-                    </p>
-                </div>
+                    <div class="d-flex gap-0-5">
+                        <span class="fw-bold">Alérgenos: </span>
+                        <p class="text-capitalize-first">
+                            {selectedDish?.allergens}
+                        </p>
+                    </div>
                 {/if}
             </details>
         </div>
@@ -265,10 +226,7 @@
     }
 
     .dishes-sidebar {
-        grid-template-columns: repeat(
-            calc(var(--template-columns) - 1),
-            minmax(0, 1fr)
-        ) !important;
+        grid-template-columns: repeat(calc(var(--template-columns) - 1), minmax(0, 1fr)) !important;
     }
 
     .dishes {
@@ -395,7 +353,6 @@
         height: 25vw;
     }
 
-
     @media only screen and (max-width: 768px) {
         .dish {
             flex: 0 0 100%;
@@ -432,7 +389,6 @@
             height: 60vh;
         }
     }
-
 
     .disabled {
         opacity: 0.5;

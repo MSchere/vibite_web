@@ -1,9 +1,9 @@
 <script script lang="ts">
     import { functions } from "$lib/firebase";
+    import { Order, orderingCriteria, search } from "$src/lib/filters";
     import { ErrorType } from "$types/error";
     import Icon from "@iconify/svelte";
     import { httpsCallable } from "firebase/functions";
-    import { search, orderingCriteria, Order } from "$src/lib/filters";
 
     let email = "";
     let emailError = "";
@@ -15,10 +15,7 @@
             emailError = "Por favor, introduce un correo electrónico válido.";
         } else {
             try {
-                const subscribeCallable = httpsCallable(
-                    functions,
-                    "subscribeToNewsletterCallable",
-                );
+                const subscribeCallable = httpsCallable(functions, "subscribeToNewsletterCallable");
                 await subscribeCallable({ emailAddress: email });
                 emailError = "";
                 email = "";
@@ -27,8 +24,7 @@
                 if (error.message?.includes(ErrorType.UserAlreadyExists)) {
                     emailError = "Ya estás suscrito a nuestra newsletter.";
                 } else {
-                    emailError =
-                        "Ha ocurrido un error al suscribirte a nuestra newsletter.";
+                    emailError = "Ha ocurrido un error al suscribirte a nuestra newsletter.";
                 }
             }
         }
@@ -36,8 +32,7 @@
 
     function updateSearch(e: Event) {
         const srchValue = (e.target as HTMLInputElement).value.toLowerCase();
-        if ($orderingCriteria[0].field !== Order.NAME)
-            orderingCriteria.update((o) => ({ ...o, field: Order.NAME }));
+        if ($orderingCriteria[0].field !== Order.NAME) orderingCriteria.update((o) => ({ ...o, field: Order.NAME }));
         search.update((s) => srchValue);
     }
 </script>
@@ -49,18 +44,8 @@
                 <a href="/dishes"> ViBite </a>
             </h1>
             <form class="srch">
-                <Icon
-                    icon="carbon:search"
-                    class="p-absolute"
-                    height="24"
-                    style="left: 1rem;"
-                ></Icon>
-                <input
-                    type="text"
-                    class="srch-box"
-                    placeholder="Buscar platos.."
-                    on:keyup={updateSearch}
-                />
+                <Icon icon="carbon:search" class="p-absolute" height="24" style="left: 1rem;"></Icon>
+                <input type="text" class="srch-box" placeholder="Buscar platos.." on:keyup={updateSearch} />
                 <div class="srch-btn">
                     <a href="/dishes">
                         <button type="submit">Buscar</button>
@@ -71,8 +56,7 @@
         <div class="info container">
             <div class="section">
                 <p class="text">
-                    Encuentra y compara tus tuppers de comida favoritos de
-                    varios proveedores en un solo lugar:
+                    Encuentra y compara tus tuppers de comida favoritos de varios proveedores en un solo lugar:
                 </p>
             </div>
 
@@ -83,76 +67,43 @@
                         <li>Wetaca</li>
                     </div>
                     <div class="d-flex align-center gap-0-5">
-                        <input
-                            type="checkbox"
-                            class="unchecked"
-                            disabled={true}
-                        />
-                        <li>Guisos.com</li>
+                        <input type="checkbox" class="unchecked" disabled={true} />
+                        <li>Tappers.es</li>
                     </div>
                     <div class="d-flex align-center gap-0-5">
-                        <input
-                            type="checkbox"
-                            class="unchecked"
-                            disabled={true}
-                        />
-                        <li>Knoweats</li>
-                    </div>
-                    <div class="d-flex align-center gap-0-5">
-                        <input
-                            type="checkbox"
-                            class="unchecked"
-                            disabled={true}
-                        />
-                        <li>Menudiet</li>
-                    </div>
-
-                    <div class="d-flex align-center gap-0-5">
-                        <input
-                            type="checkbox"
-                            class="unchecked"
-                            disabled={true}
-                        />
-                        <li>Mi Plato</li>
-                    </div>
-                    <div class="d-flex align-center gap-0-5">
-                        <input
-                            type="checkbox"
-                            class="unchecked"
-                            disabled={true}
-                        />
+                        <input type="checkbox" class="unchecked" disabled={true} />
                         <li>Nococinomas</li>
                     </div>
                     <div class="d-flex align-center gap-0-5">
-                        <input
-                            type="checkbox"
-                            class="unchecked"
-                            disabled={true}
-                        />
-                        <li>Tappers.es</li>
+                        <input type="checkbox" class="unchecked" disabled={true} />
+                        <li>Menudiet</li>
+                    </div>
+                    <div class="d-flex align-center gap-0-5">
+                        <input type="checkbox" class="unchecked" disabled={true} />
+                        <li>Guisos.com</li>
+                    </div>
+                    <div class="d-flex align-center gap-0-5">
+                        <input type="checkbox" class="unchecked" disabled={true} />
+                        <li>Knoweats</li>
+                    </div>
+                    <div class="d-flex align-center gap-0-5">
+                        <input type="checkbox" class="unchecked" disabled={true} />
+                        <li>Mi Plato</li>
                     </div>
                 </ul>
             </div>
 
             <div class="section">
                 <p class="text">
-                    Aprovecha las herramientas de ViBite para calcular tu BMI,
-                    BMR y Metabolismo Basal y elegir los platos que mejor se
-                    adapten a tus necesidades.
+                    Aprovecha las herramientas de ViBite para calcular tu BMI, BMR y Metabolismo Basal y elegir los
+                    platos que mejor se adapten a tus necesidades.
                 </p>
                 <p>
-                    ¡Únete a nuestra newsletter para <strong
-                        >mantenerte al día</strong
-                    > en los avances del proyecto!
+                    ¡Únete a nuestra newsletter para <strong>mantenerte al día</strong> en los avances del proyecto!
                 </p>
                 <div class="d-flex flex-column">
                     <form class="email">
-                        <Icon
-                            icon="carbon:email"
-                            class="p-absolute"
-                            height="24"
-                            style="left: 1rem;"
-                        ></Icon>
+                        <Icon icon="carbon:email" class="p-absolute" height="24" style="left: 1rem;"></Icon>
                         <input
                             class="input email-input"
                             bind:value={email}
@@ -172,9 +123,7 @@
                         {#if emailError}<span class="error">
                                 {emailError}
                             </span>{/if}
-                        {#if subscribed}<span class="success">
-                                ¡Gracias por suscribirte!
-                            </span>{/if}
+                        {#if subscribed}<span class="success"> ¡Gracias por suscribirte! </span>{/if}
                     </div>
                 </div>
             </div>

@@ -1,18 +1,12 @@
 <script lang="ts">
-    import {
-        Order,
-        OrderTranslation,
-        filter,
-        orderingCriteria,
-    } from "$src/lib/filters";
+    import { Order, OrderTranslation, filter, orderingCriteria } from "$src/lib/filters";
     import Icon from "@iconify/svelte";
 
     function toggleOrderingCriteria() {
         $orderingCriteria = [
             {
                 field: $orderingCriteria[0].field,
-                direction:
-                    $orderingCriteria[0].direction === "asc" ? "desc" : "asc",
+                direction: $orderingCriteria[0].direction === "asc" ? "desc" : "asc",
             },
             ...$orderingCriteria.slice(1),
         ];
@@ -24,8 +18,7 @@
         <li>
             <button
                 class={!$filter.isOpen ? "filter-btn" : "filter-btn clicked"}
-                on:click={() =>
-                    filter.update((f) => ({ ...f, isOpen: !f.isOpen }))}
+                on:click={() => filter.update((f) => ({ ...f, isOpen: !f.isOpen }))}
             >
                 <Icon icon="carbon:filter" height="48" color="#f5f6fa"></Icon>
             </button>
@@ -44,14 +37,9 @@
                 <summary>
                     <button on:click={toggleOrderingCriteria}>
                         {#if $orderingCriteria[0].direction === "asc"}
-                            <Icon icon="mi:arrow-up" height="24" color="#f5f6fa"
-                            ></Icon>
+                            <Icon icon="mi:arrow-up" height="24" color="#f5f6fa"></Icon>
                         {:else}
-                            <Icon
-                                icon="mi:arrow-down"
-                                height="24"
-                                color="#f5f6fa"
-                            ></Icon>
+                            <Icon icon="mi:arrow-down" height="24" color="#f5f6fa"></Icon>
                         {/if}
                     </button>
                     {OrderTranslation[$orderingCriteria[0].field]}</summary
@@ -66,8 +54,7 @@
                                     ($orderingCriteria = [
                                         {
                                             field: value,
-                                            direction:
-                                                $orderingCriteria[0].direction,
+                                            direction: $orderingCriteria[0].direction,
                                         },
                                         ...$orderingCriteria.slice(1),
                                     ])}
@@ -136,13 +123,9 @@
                 margin-right: 1rem;
                 align-items: center;
                 border-radius: 0.55rem;
-                border: 3px solid var(--primary);
+                border: 3px solid white;
                 display: flex;
                 justify-content: center;
-                &:hover {
-                    background-color: var(--primary);
-                    color: white;
-                }
             }
         }
         ul {

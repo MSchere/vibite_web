@@ -1,11 +1,5 @@
 <script lang="ts">
-
-    import {
-        NutrientNames,
-        type Dish,
-        type NutrientInfo,
-        type Nutrients,
-    } from "$src/types/dish";
+    import { NutrientNames, type Dish, type NutrientInfo, type Nutrients } from "$src/types/dish";
     export let selectedDish: Dish;
 
     function orderNutrients(nutrients: Nutrients): [string, NutrientInfo][] {

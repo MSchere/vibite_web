@@ -42,7 +42,6 @@ $width-xxl: map-get($container-max-widths, xxl);
 $width-fhd: map-get($container-max-widths, fhd);
 $width-uw: map-get($container-max-widths, uw);
 
-
 :root {
     --template-columns: 5;
     --header-height: 65px;
