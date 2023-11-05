@@ -1,4 +1,3 @@
-
 import { Dish } from "$root/src/types/dish";
 import { logger } from "firebase-functions/v2";
 import { WetacaDishDto } from "src/dtos/wetacaDish.dto";
@@ -11,8 +10,7 @@ export class WetacaDishProcessor {
 
     static async getAndProcessDishes(): Promise<Dish[]> {
         const wetacaDishes = await this.getDishes();
-        if (wetacaDishes.length === 0)
-            throw new Error("Error getting Wetaca dishes");
+        if (wetacaDishes.length === 0) throw new Error("Error getting Wetaca dishes");
         return wetacaDishes.map((wetacaDish) => this.processDish(wetacaDish));
     }
 
@@ -29,9 +27,9 @@ export class WetacaDishProcessor {
                     "Content-Type": "application/json",
                     "Content-Length": `${Buffer.byteLength(body)}`,
                     "User-Agent": "ViBite V1.0",
-                    "Host": "www.wetaca.com"
+                    Host: "www.wetaca.com",
                 },
-                body
+                body,
             });
             const json = await response.json();
             logger.log("REPONSE FROM WETACA", response);
@@ -43,19 +41,8 @@ export class WetacaDishProcessor {
         }
     }
 
-
     private static processDish(wetacaDish: WetacaDishDto): Dish {
-        const {
-            id,
-            name,
-            price,
-            slug,
-            ingredients,
-            allergens,
-            category,
-            tags,
-            rating,
-        } = wetacaDish
+        const { id, name, price, slug, ingredients, allergens, category, tags, rating } = wetacaDish;
 
         const isVegan = tags.includes("VEGAN");
         const isLactoseFree = tags.includes("milk");
@@ -84,45 +71,45 @@ export class WetacaDishProcessor {
                 energy: {
                     unit: "kcal",
                     valueTotal: wetacaDish.nutritionFacts.energy,
-                    value100: wetacaDish.nutritionFacts.energy / wetacaDish.weight * 100,
+                    value100: (wetacaDish.nutritionFacts.energy / wetacaDish.weight) * 100,
                 },
                 carbs: {
                     unit: "g",
                     valueTotal: wetacaDish.nutritionFacts.hydrates,
-                    value100: wetacaDish.nutritionFacts.hydrates / wetacaDish.weight * 100,
+                    value100: (wetacaDish.nutritionFacts.hydrates / wetacaDish.weight) * 100,
                 },
                 fiber: {
                     unit: "g",
                     valueTotal: wetacaDish.nutritionFacts.fiber,
-                    value100: wetacaDish.nutritionFacts.fiber / wetacaDish.weight * 100,
+                    value100: (wetacaDish.nutritionFacts.fiber / wetacaDish.weight) * 100,
                 },
                 satFat: {
                     unit: "g",
                     valueTotal: wetacaDish.nutritionFacts.saturatedFat,
-                    value100: wetacaDish.nutritionFacts.saturatedFat / wetacaDish.weight * 100,
+                    value100: (wetacaDish.nutritionFacts.saturatedFat / wetacaDish.weight) * 100,
                 },
                 fat: {
                     unit: "g",
                     valueTotal: wetacaDish.nutritionFacts.totalFat,
-                    value100: wetacaDish.nutritionFacts.totalFat / wetacaDish.weight * 100,
+                    value100: (wetacaDish.nutritionFacts.totalFat / wetacaDish.weight) * 100,
                 },
                 sugar: {
                     unit: "g",
                     valueTotal: wetacaDish.nutritionFacts.sugars,
-                    value100: wetacaDish.nutritionFacts.sugars / wetacaDish.weight * 100,
+                    value100: (wetacaDish.nutritionFacts.sugars / wetacaDish.weight) * 100,
                 },
                 salt: {
                     unit: "g",
                     valueTotal: wetacaDish.nutritionFacts.salt,
-                    value100: wetacaDish.nutritionFacts.salt / wetacaDish.weight * 100,
+                    value100: (wetacaDish.nutritionFacts.salt / wetacaDish.weight) * 100,
                 },
                 protein: {
                     unit: "g",
                     valueTotal: wetacaDish.nutritionFacts.proteins,
-                    value100: wetacaDish.nutritionFacts.proteins / wetacaDish.weight * 100,
+                    value100: (wetacaDish.nutritionFacts.proteins / wetacaDish.weight) * 100,
                 },
             },
-        }
+        };
         const { nutriScore, score } = calculateNutriScore(dish);
         dish.nutriScore = nutriScore;
         dish.score = score;

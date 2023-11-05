@@ -2,7 +2,6 @@ $primary-500: #e84142;
 $primary-600: #d63031;
 $primary-700: #c22e2a;
 
-
 :root {
     --template-columns: 5;
 }
@@ -11,22 +10,18 @@ $primary-700: #c22e2a;
     :root {
         --template-columns: 4;
     }
-
 }
-
 
 @media screen and (max-width: 1080px) {
     :root {
         --template-columns: 3;
     }
-
 }
 
 @media screen and (max-width: 768px) {
     :root {
         --template-columns: 2;
     }
-
 }
 
 @media screen and (max-width: 480px) {

@@ -1,4 +1,3 @@
-
 export type WetacaDishDto = {
     datePublished: string;
     id: number;

@@ -8,8 +8,8 @@ setGlobalOptions({
     region: "europe-west1",
 });
 
+// export { updateDishesCallable } from "./callable/updateDishes.callable";
 export { subscribeToNewsletterCallable } from "./callable/subscribeToNewsletter.callable";
-export { updateDishesCallable } from "./callable/updateDishes.callable";
+export { disableDishesCallable } from "./callable/disableDishes.callable"
 export { disableDishesScheduled } from "./scheduled/disableDishes.scheduled";
-export { updateDishesScheduled } from "./scheduled/updateDishes.scheduled";
-
+// export { updateDishesScheduled } from "./scheduled/updateDishes.scheduled";

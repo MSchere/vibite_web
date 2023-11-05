@@ -1,64 +1,72 @@
-.shimmer { 
-    display: inline-block; 
-    position: relative; 
-    background: #f6f7f8; 
-    background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%); 
-    background-repeat: no-repeat; 
-    background-size: 200% 100%; 
- 
-    animation: shimmer 0.8s infinite linear; 
-} 
- 
-.shimmer.shimmer-secondary { 
-    background: #3a3a3a; 
-    background-image: linear-gradient(to right, #3a3a3a 0%, #3f3f3f 10%, #4a4a4a 20%, #3f3f3f 30%, #3a3a3a 50%, #3a3a3a 100%); 
-    background-repeat: no-repeat; 
-    background-size: 200% 100%; 
-} 
- 
-@keyframes shimmer { 
-    0% { 
-        background-position: 100% 0; 
-    } 
- 
-    100% { 
-        background-position: -100% 0; 
-    } 
-} 
- 
-svg.spinner { 
-    transform-origin: center; 
-    animation: rotate4 2s linear infinite; 
-} 
- 
-svg.spinner>circle { 
-    fill: none; 
-    stroke: currentColor; 
-    stroke-width: 2; 
-    stroke-dasharray: 1, 200; 
-    stroke-dashoffset: 0; 
-    stroke-linecap: round; 
-    animation: dash4 1.5s ease-in-out infinite; 
-} 
- 
-@keyframes rotate4 { 
-    100% { 
-        transform: rotate(360deg); 
-    } 
-} 
- 
-@keyframes dash4 { 
-    0% { 
-        stroke-dasharray: 1, 200; 
-        stroke-dashoffset: 0; 
-    } 
- 
-    50% { 
-        stroke-dasharray: 90, 200; 
-        stroke-dashoffset: -35px; 
-    } 
- 
-    100% { 
-        stroke-dashoffset: -125px; 
-    } 
+.shimmer {
+    display: inline-block;
+    position: relative;
+    background: #f6f7f8;
+    background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+    background-repeat: no-repeat;
+    background-size: 200% 100%;
+
+    animation: shimmer 0.8s infinite linear;
+}
+
+.shimmer.shimmer-secondary {
+    background: #3a3a3a;
+    background-image: linear-gradient(
+        to right,
+        #3a3a3a 0%,
+        #3f3f3f 10%,
+        #4a4a4a 20%,
+        #3f3f3f 30%,
+        #3a3a3a 50%,
+        #3a3a3a 100%
+    );
+    background-repeat: no-repeat;
+    background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
+}
+
+svg.spinner {
+    transform-origin: center;
+    animation: rotate4 2s linear infinite;
+}
+
+svg.spinner > circle {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+    stroke-linecap: round;
+    animation: dash4 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate4 {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes dash4 {
+    0% {
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+    }
+
+    50% {
+        stroke-dasharray: 90, 200;
+        stroke-dashoffset: -35px;
+    }
+
+    100% {
+        stroke-dashoffset: -125px;
+    }
 }
