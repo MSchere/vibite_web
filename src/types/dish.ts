@@ -4,7 +4,7 @@ export type NutrientInfo = {
     value100: number;
 };
 
-export enum NutrientNames {
+export enum NutrientName {
     ENERGY = "Energía",
     FAT = "Grasas",
     SATFAT = "Grasas saturadas",
@@ -15,7 +15,7 @@ export enum NutrientNames {
     SALT = "Sal",
 }
 
-export type Nutrients = {
+export type Nutrient = {
     energy: NutrientInfo;
     carbs: NutrientInfo;
     fiber: NutrientInfo;
@@ -33,14 +33,27 @@ export type Rating = {
 
 export type NutriScore = "A" | "B" | "C" | "D" | "E";
 
+export enum Platform {
+    WETACA = "Wetaca",
+    TAPPERS = "Tappers",
+    PROZIS = "Prozis",
+    NOCOCINOMAS = "Nococinomas",
+    MENUDIET = "Menudiet",
+    GUISOS = "Guisos",
+    KNOWEATS = "Knoweats",
+    MIPLATO = "MiPlato",
+}
+
 export type Dish = {
     id: string;
+    platform: Platform;
     name: string;
     description: string;
     ingredients: string;
     price: number;
     allergens: string;
-    nutrients: Nutrients;
+    weight: number;
+    nutrients: Nutrient;
     dishUrl: string;
     imageUrl: string;
     isGlutenFree: boolean;

@@ -1,22 +1,22 @@
 <script lang="ts">
-    import { NutrientNames, type Dish, type NutrientInfo, type Nutrients } from "$src/types/dish";
+    import { NutrientName, type Dish, type Nutrient, type NutrientInfo } from "$src/types/dish";
     export let selectedDish: Dish;
 
-    function orderNutrients(nutrients: Nutrients): [string, NutrientInfo][] {
+    function orderNutrients(nutrients: Nutrient): [string, NutrientInfo][] {
         const nutrientsArray = Object.entries(nutrients);
         const nutrientsOrder = [
-            NutrientNames.ENERGY,
-            NutrientNames.FAT,
-            NutrientNames.SATFAT,
-            NutrientNames.PROTEIN,
-            NutrientNames.CARBS,
-            NutrientNames.SUGAR,
-            NutrientNames.FIBER,
-            NutrientNames.SALT,
+            NutrientName.ENERGY,
+            NutrientName.FAT,
+            NutrientName.SATFAT,
+            NutrientName.PROTEIN,
+            NutrientName.CARBS,
+            NutrientName.SUGAR,
+            NutrientName.FIBER,
+            NutrientName.SALT,
         ];
         const formattedNutrients = nutrientsOrder.map((nutrient) => {
             const nutrientValue = nutrientsArray.find(
-                (nutrientArray) => NutrientNames[nutrientArray[0].toUpperCase()] === nutrient,
+                (nutrientArray) => NutrientName[nutrientArray[0].toUpperCase()] === nutrient,
             ) || [
                 "NULL",
                 {
@@ -36,18 +36,20 @@
         <tr>
             <td></td>
             <td class="table-hint">100g</td>
-            <td class="table-hint">Total</td>
+            <td class="table-hint">{`Total (${selectedDish.weight}g)`}</td>
         </tr>
         {#each orderNutrients(selectedDish?.nutrients) as nutrient}
-            <tr class="d-flex gap-0-5">
-                <td class="fw-bold">{`${NutrientNames[nutrient[0].toUpperCase()]}:`}</td>
-                <td>
-                    {`${nutrient[1].value100} ${nutrient[1].unit}`}
-                </td>
-                <td>
-                    {`${nutrient[1].valueTotal} ${nutrient[1].unit}`}
-                </td>
-            </tr>
+            {#if nutrient[0] !== "NULL"}
+                <tr class="flex gap-0-5">
+                    <td class="fw-bold">{`${NutrientName[nutrient[0].toUpperCase()]}:`}</td>
+                    <td>
+                        {`${nutrient[1].value100.toFixed(2)} ${nutrient[1].unit}`}
+                    </td>
+                    <td>
+                        {`${nutrient[1].valueTotal.toFixed(2)} ${nutrient[1].unit}`}
+                    </td>
+                </tr>
+            {/if}
         {/each}
     </tbody>
 </table>

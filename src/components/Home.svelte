@@ -39,12 +39,12 @@
 
 <main id="frame">
     <div class="container">
-        <div class="d-flex flex-column align-center">
+        <div class="flex flex-column items-center">
             <h1 class="title">
                 <a href="/dishes"> ViBite </a>
             </h1>
             <form class="srch">
-                <Icon icon="carbon:search" class="p-absolute" height="24" style="left: 1rem;"></Icon>
+                <Icon icon="carbon:search" class="absolute" height="24" style="left: 1rem;"></Icon>
                 <input type="text" class="srch-box" placeholder="Buscar platos.." on:keyup={updateSearch} />
                 <div class="srch-btn">
                     <a href="/dishes">
@@ -62,31 +62,35 @@
 
             <div class="section">
                 <ul class="text">
-                    <div class="d-flex align-center gap-0-5">
+                    <div class="flex items-center gap-0-5">
                         <input type="checkbox" checked={true} disabled={true} />
                         <li>Wetaca</li>
                     </div>
-                    <div class="d-flex align-center gap-0-5">
-                        <input type="checkbox" class="unchecked" disabled={true} />
+                    <div class="flex items-center gap-0-5">
+                        <input type="checkbox" checked={true} disabled={true} />
                         <li>Tappers.es</li>
                     </div>
-                    <div class="d-flex align-center gap-0-5">
+                    <div class="flex items-center gap-0-5">
+                        <input type="checkbox" class="unchecked" disabled={true} />
+                        <li>Prozis</li>
+                    </div>
+                    <div class="flex items-center gap-0-5">
                         <input type="checkbox" class="unchecked" disabled={true} />
                         <li>Nococinomas</li>
                     </div>
-                    <div class="d-flex align-center gap-0-5">
+                    <div class="flex items-center gap-0-5">
                         <input type="checkbox" class="unchecked" disabled={true} />
                         <li>Menudiet</li>
                     </div>
-                    <div class="d-flex align-center gap-0-5">
+                    <div class="flex items-center gap-0-5">
                         <input type="checkbox" class="unchecked" disabled={true} />
                         <li>Guisos.com</li>
                     </div>
-                    <div class="d-flex align-center gap-0-5">
+                    <div class="flex items-center gap-0-5">
                         <input type="checkbox" class="unchecked" disabled={true} />
                         <li>Knoweats</li>
                     </div>
-                    <div class="d-flex align-center gap-0-5">
+                    <div class="flex items-center gap-0-5">
                         <input type="checkbox" class="unchecked" disabled={true} />
                         <li>Mi Plato</li>
                     </div>
@@ -101,9 +105,9 @@
                 <p>
                     ¡Únete a nuestra newsletter para <strong>mantenerte al día</strong> en los avances del proyecto!
                 </p>
-                <div class="d-flex flex-column">
+                <div class="flex flex-column">
                     <form class="email">
-                        <Icon icon="carbon:email" class="p-absolute" height="24" style="left: 1rem;"></Icon>
+                        <Icon icon="carbon:email" class="absolute" height="24" style="left: 1rem;"></Icon>
                         <input
                             class="input email-input"
                             bind:value={email}
@@ -111,7 +115,7 @@
                             disabled={subscribed}
                         />
                         <button
-                            class="outline p-absolute sub-btn"
+                            class="outline absolute sub-btn"
                             type="submit"
                             on:click={subscribe}
                             disabled={subscribed}
@@ -119,7 +123,7 @@
                             Suscribirse
                         </button>
                     </form>
-                    <div class="d-flex align-center justify-center">
+                    <div class="flex items-center justify-center">
                         {#if emailError}<span class="error">
                                 {emailError}
                             </span>{/if}

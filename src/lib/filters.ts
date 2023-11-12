@@ -1,3 +1,4 @@
+import { Platform } from "$src/types/dish";
 import { writable, type Writable } from "svelte/store";
 
 export enum NutrientValues100 {
@@ -44,6 +45,7 @@ export interface Filter {
     isOpen: boolean;
     priceRange?: [number, number];
     nutrientRanges: Record<NutrientValues100, [number, number]>;
+    platforms: Platform[];
     onlyAvailable?: boolean;
     onlyVegan?: boolean;
     onlyGlutenFree?: boolean;
@@ -65,10 +67,17 @@ const defaultNutrientRanges: Record<NutrientValues100, [number, number]> = {
     [NutrientValues100.SUGAR]: [0, 0],
     [NutrientValues100.SALT]: [0, 0],
 };
+
+const defaultPlatforms: Platform[] = [
+    Platform.WETACA,
+    Platform.TAPPERS,
+    // Platform.PROZIS,
+];
 export const filter: Writable<Filter> = writable({
     isOpen: false,
     onlyAvailable: true,
     nutrientRanges: defaultNutrientRanges,
+    platforms: defaultPlatforms,
 });
 
 export const search: Writable<string> = writable("");
@@ -91,6 +100,7 @@ export function resetFilter() {
         isOpen: false,
         onlyAvailable: true,
         nutrientRanges: defaultNutrientRanges,
+        platforms: defaultPlatforms,
     });
 }
 

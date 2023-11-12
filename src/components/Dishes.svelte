@@ -32,6 +32,11 @@
                 queryConditions.push(where(nutrient, "<=", max));
             }
         }
+        if ($filter.platforms.length > 0) {
+            queryConditions.push(where("platform", "in", $filter.platforms));
+        } else {
+            queryConditions.push(where("platform", "==", ""));
+        }
         for (let i = 0; i < $orderingCriteria.length; i++) {
             queryConditions.push(orderBy($orderingCriteria[i].field, $orderingCriteria[i].direction));
         }
@@ -42,7 +47,7 @@
     function loadDishes() {
         try {
             const filterQuery = getFilterQuery();
-            onSnapshot(filterQuery, (snapshot: any) => {
+            onSnapshot(filterQuery, async (snapshot: any) => {
                 dishes = snapshot.docs.map((doc: any) => {
                     const dish = doc.data() as Dish;
                     dish.id = doc.id;
@@ -67,38 +72,10 @@
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     }
 
-    // async function updateAllnutrientsToLower() {
-    //     const allDishes = collection(firestore, "dishes");
-    //     onSnapshot(allDishes, (snapshot: any) => {
-    //         snapshot.docs.forEach(async (doc: any) => {
-    //             const dish = doc.data() as Dish;
-    //             const nutrients = dish.nutrients;
-    //             const newNutrients = {};
-    //             console.log("UPDATING", dish.name);
-    //             for (const [nutrient, value] of Object.entries(nutrients)) {
-    //                 if (nutrient === "SATFAT")
-    //                     newNutrients["satFat"] = value;
-    //                 else
-    //                     newNutrients[nutrient.toLowerCase()] = value;
-    //             }
-    //             await updateDoc(doc.ref, { nutrients: newNutrients });
-    //         });
-    //     });
-    // }
-
-    //call callable cloud function
-    // async function updateDishesOnServer() {
-    //     const functionUrl = "https://europe-west1-vibite-3ab78.cloudfunctions.net/updateDishesCallable";
-    //     const functions = getFunctions();
-    //     const updateDishesCallable = httpsCallableFromURL(functions, functionUrl);
-    //     const response = await updateDishesCallable();
-    //     console.log("update dishes response", response);
-    // }
 </script>
 
 <main>
-    <!-- <button on:click={async (e) => {await updateAllnutrientsToLower()}}>Update all nutrients</button> -->
-    <!-- <button on:click={async (e) => {await updateDishesOnServer()}}>Update dishes on server</button>    -->
+    <!-- <button on:click={async (e) => {await updateDishes()}}>Update dishes</button> -->
     {#if dishes.length > 0}
         <div class={!$filter.isOpen ? "dishes" : "dishes dishes-sidebar"}>
             {#each dishes as dish}
@@ -113,24 +90,32 @@
                 >
                     <img src={dish.imageUrl} alt={dish.name} />
                     <div class="p-0-5">
-                        <div class="d-flex align-center">
-                            <div class="d-flex align-center p-absolute gap-0-5 top-0 right-0">
-                                <span class="score">
-                                    {`${dish.score} / 10`}
-                                </span>
-                                <span
-                                    class={dish.nutriScore === "A"
-                                        ? "nutriscore dark-green"
-                                        : dish.nutriScore === "B"
-                                        ? "nutriscore light-green"
-                                        : dish.nutriScore === "C"
-                                        ? "nutriscore yellow"
-                                        : dish.nutriScore === "D"
-                                        ? "nutriscore orange"
-                                        : "nutriscore red"}
-                                >
-                                    {dish.nutriScore}
-                                </span>
+                        <div class="flex items-center">
+                            <div class="flex justify-between absolute gap-0-5 top-0 left-0 w-full p-0-5">
+                                <img
+                                    src={`src/assets/logos/${dish.platform.toLowerCase()}.png`}
+                                    alt={dish.platform}
+                                    width="32"
+                                    height="32"
+                                />
+                                <div class="flex gap-1">
+                                    <span class="score">
+                                        {`${dish.score} / 10`}
+                                    </span>
+                                    <span
+                                        class={dish.nutriScore === "A"
+                                            ? "nutriscore dark-green"
+                                            : dish.nutriScore === "B"
+                                            ? "nutriscore light-green"
+                                            : dish.nutriScore === "C"
+                                            ? "nutriscore yellow"
+                                            : dish.nutriScore === "D"
+                                            ? "nutriscore orange"
+                                            : "nutriscore red"}
+                                    >
+                                        {dish.nutriScore}
+                                    </span>
+                                </div>
                             </div>
                             <span class="fw-bold dish-price">
                                 {`${dish.price} €`}
@@ -142,15 +127,15 @@
             {/each}
         </div>
     {:else if firstLoad}
-        <div class="dishes w-100vw">
+        <div class="dishes w-screen">
             {#each { length: 15 } as _}
                 <article class="dish shimmer"></article>
             {/each}
         </div>
     {:else}
-        <div class="w-100vw h-100vh">
+        <div class="w-screen h-screen">
             <div class="reset-filters-box">
-                <h4 class="w-100">No hay platos disponibles con los filtros seleccionados</h4>
+                <h4 class="w-full">No hay platos disponibles con los filtros seleccionados</h4>
                 <button on:click={() => resetAll()}> Resetear filtros </button>
             </div>
         </div>
@@ -158,12 +143,12 @@
 </main>
 
 <Modal bind:showModal>
-    <div class="d-flex align-center justify-center" slot="header">
+    <div class="flex items-center justify-center" slot="header">
         <h3 class="primary text-capitalize-first">{selectedDish?.name}</h3>
     </div>
     <div class="modal-section">
-        <div class="d-flex gap-0-5">
-            <div class="p-relative">
+        <div class="flex gap-0-5">
+            <div class="relative">
                 <img src={selectedDish?.imageUrl} alt={selectedDish?.name} />
                 <span class="timestamp-text">
                     {`Actualizado: ${formatDate(selectedDish?.updatedAt)}`}
@@ -176,15 +161,15 @@
             {/if}
         </div>
         <div class="dish-more-info">
-            <div class="d-block d-md-none">
-                <div class="d-flex gap-0-5">
+            <div class="block d-md-none">
+                <div class="flex gap-0-5">
                     <span class="fw-bold">Ingredientes: </span>
                     <p class="text-capitalize-first">
                         {selectedDish?.ingredients}
                     </p>
                 </div>
                 {#if selectedDish?.allergens}
-                    <div class="d-flex gap-0-5">
+                    <div class="flex gap-0-5">
                         <span class="fw-bold">Alérgenos: </span>
                         <p class="text-capitalize-first">
                             {selectedDish?.allergens}
@@ -192,15 +177,15 @@
                     </div>
                 {/if}
             </div>
-            <details class="d-none d-md-block w-100">
+            <details class="d-none d-mblock w-full">
                 <summary class="fw-bold">Ingredientes</summary>
-                <div class="d-flex gap-0-5">
+                <div class="flex gap-0-5">
                     <p class="text-capitalize-first">
                         {selectedDish?.ingredients}
                     </p>
                 </div>
                 {#if selectedDish?.allergens}
-                    <div class="d-flex gap-0-5">
+                    <div class="flex gap-0-5">
                         <span class="fw-bold">Alérgenos: </span>
                         <p class="text-capitalize-first">
                             {selectedDish?.allergens}
@@ -362,7 +347,7 @@
         }
         .modal-section {
             width: 100%;
-            .d-flex {
+            .flex {
                 flex-direction: column;
             }
 

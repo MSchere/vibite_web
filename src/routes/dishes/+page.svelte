@@ -5,7 +5,7 @@
 </script>
 
 <Header></Header>
-<div class="d-flex justify-center">
+<div class="flex justify-center">
     <SideBar></SideBar>
     <Dishes></Dishes>
 </div>

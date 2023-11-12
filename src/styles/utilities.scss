@@ -12,11 +12,11 @@
     width: 70%;
 }
 
-.w-100 {
+.w-full {
     width: 100%;
 }
 
-.w-100vw {
+.w-screen {
     width: 100vw;
 }
 
@@ -40,7 +40,7 @@
     width: 50px;
 }
 
-.w-100p {
+.w-100 {
     width: 100px;
 }
 
@@ -72,35 +72,35 @@
     width: fit-content;
 }
 
-.mx-w-100 {
+.max-w-100 {
     max-width: 100%;
 }
 
-.mx-w-280p {
+.max-w-280p {
     max-width: 280px;
 }
 
-.mx-w-928p {
+.max-w-928p {
     max-width: 928px;
 }
 
-.mx-w-1440p {
+.max-w-1440p {
     max-width: 1440px;
 }
 
-.mn-w-50p {
+.min-w-50p {
     min-width: 50px;
 }
 
-.mn-w-80p {
+.min-w-80p {
     min-width: 80px;
 }
 
-.mn-w-100p {
+.min-w-100 {
     min-width: 100px;
 }
 
-.mn-w-100 {
+.min-w-full {
     min-width: 100%;
 }
 
@@ -152,7 +152,7 @@
     height: 80%;
 }
 
-.h-100 {
+.h-fulll {
     height: 100%;
 }
 
@@ -184,31 +184,31 @@
     height: 600px;
 }
 
-.h-100vh {
+.h-screen {
     height: 100vh;
 }
 
-.mn-h-100vh {
+.min-h-screen {
     min-height: 100vh;
 }
 
-.mx-h-200p {
+.max-h-200p {
     max-height: 300px;
 }
 
-.mx-h-100 {
+.max-h-full {
     max-height: 100%;
 }
 
-.p-relative {
+.relative {
     position: relative;
 }
 
-.p-absolute {
+.absolute {
     position: absolute;
 }
 
-.p-fixed {
+.fixed {
     position: fixed;
 }
 
@@ -259,7 +259,7 @@
 }
 
 // Visible only on medium screens
-.d-none.d-md-block.d-xl-none {
+.d-none.d-mblock.d-xl-none {
     display: none;
 
     @include media-breakpoint-between(sm, lg) {
@@ -268,7 +268,7 @@
 }
 
 // Visible only on small screens
-.d-block.d-md-none {
+.block.d-md-none {
     display: none;
 
     @include media-breakpoint-down(sm) {
@@ -286,7 +286,7 @@
 }
 
 // Visible until medium screens
-.d-none.d-md-block {
+.d-none.d-mblock {
     display: none;
 
     @include media-breakpoint-down(md) {
@@ -295,7 +295,7 @@
 }
 
 // Non-visible until medium screens
-.d-block.d-md-none {
+.block.d-md-none {
     display: block;
 
     @include media-breakpoint-down(md) {
@@ -304,7 +304,7 @@
 }
 
 // Visible until large screens
-.d-block.d-lg-none {
+.block.d-lg-none {
     display: none;
 
     @include media-breakpoint-down(lg) {
@@ -312,11 +312,11 @@
     }
 }
 
-.d-flex {
+.flex {
     display: flex;
 }
 
-.d-block {
+.block {
     display: block;
 }
 
@@ -462,7 +462,7 @@
     margin-right: -11px;
 }
 
-.align-center {
+.items-center {
     align-items: center;
 }
 
@@ -662,11 +662,11 @@
     margin-right: 5px;
 }
 
-.mx-0-25 {
+.max-0-25 {
     margin: 0 0.25rem;
 }
 
-.mx-2-125 {
+.max-2-125 {
     margin: 0 2.125rem;
 }
 
