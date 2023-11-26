@@ -3,9 +3,13 @@
     import NutritionalInfo from "$components/NutritionalInfo.svelte";
     import { firestore } from "$lib/firebase";
     import { filter, orderingCriteria, resetAll, search } from "$src/lib/filters";
-    import type { Dish } from "$types/dish";
+    import { Platform, type Dish } from "$types/dish";
     import Icon from "@iconify/svelte";
     import { QueryConstraint, collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
+
+    import WetacaLogo from "$lib/static/logos/wetaca.png";
+    import TappersLogo from "$lib/static/logos/tappers.png";
+    import ProzisLogo from "$lib/static/logos/prozis.png";
 
     let firstLoad = true;
     let dishes: Dish[] = [];
@@ -72,10 +76,22 @@
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     }
 
+    // function disableDishes() {
+    //     const allDishes = collection(firestore, "dishes");
+    //     onSnapshot(allDishes, (snapshot: any) => {
+    //         snapshot.docs.forEach(async (doc: any) => {
+    //             await updateDoc(doc.ref, { isAvailable: false });
+    //         });
+    //     });
+    // }
 </script>
 
 <main>
-    <!-- <button on:click={async (e) => {await updateDishes()}}>Update dishes</button> -->
+    <!-- <button
+        on:click={async (e) => {
+            await disableDishes();
+        }}>Update dishes</button
+    > -->
     {#if dishes.length > 0}
         <div class={!$filter.isOpen ? "dishes" : "dishes dishes-sidebar"}>
             {#each dishes as dish}
@@ -88,16 +104,22 @@
                         showModal = true;
                     }}
                 >
-                    <img src={dish.imageUrl} alt={dish.name} />
+                    <img class="dish-img" src={dish.imageUrl} alt={dish.name} />
                     <div class="p-0-5">
                         <div class="flex items-center">
                             <div class="flex justify-between absolute gap-0-5 top-0 left-0 w-full p-0-5">
-                                <img
-                                    src={`src/assets/logos/${dish.platform.toLowerCase()}.png`}
-                                    alt={dish.platform}
-                                    width="32"
-                                    height="32"
-                                />
+                                <div class="platform-logo">
+                                    <img
+                                        src={dish.platform === Platform.WETACA
+                                            ? WetacaLogo
+                                            : dish.platform === Platform.TAPPERS
+                                            ? TappersLogo
+                                            : ProzisLogo}
+                                        alt={dish.platform}
+                                        width="32"
+                                        height="32"
+                                    />
+                                </div>
                                 <div class="flex gap-1">
                                     <span class="score">
                                         {`${dish.score} / 10`}
@@ -256,7 +278,13 @@
                 bottom: 2%;
             }
 
-            img {
+            .platform-logo {
+                background-color: white;
+                border-radius: 0.5rem;
+                padding: 0.1rem;
+            }
+
+            .dish-img {
                 border-radius: 15px 15px 0 0;
                 object-fit: cover;
                 aspect-ratio: 1 / 1;
@@ -292,6 +320,8 @@
             border-radius: 15px;
         }
         .timestamp-text {
+            color: #fcfcfc;
+            font-weight: bold;
             font-size: 0.75rem;
             position: absolute;
             bottom: 10px;
