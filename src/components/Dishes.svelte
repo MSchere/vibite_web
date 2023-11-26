@@ -120,20 +120,22 @@
                                         height="32"
                                     />
                                 </div>
-                                <div class="flex gap-1">
+                                <div class="flex gap-0-5 items-center">
                                     <span class="score">
                                         {`${dish.score} / 10`}
                                     </span>
                                     <span
-                                        class={dish.nutriScore === "A"
-                                            ? "nutriscore dark-green"
-                                            : dish.nutriScore === "B"
-                                            ? "nutriscore light-green"
-                                            : dish.nutriScore === "C"
-                                            ? "nutriscore yellow"
-                                            : dish.nutriScore === "D"
-                                            ? "nutriscore orange"
-                                            : "nutriscore red"}
+                                        class={`nutriscore ${
+                                            dish.nutriScore === "A"
+                                                ? "dark-green"
+                                                : dish.nutriScore === "B"
+                                                ? "light-green"
+                                                : dish.nutriScore === "C"
+                                                ? "yellow"
+                                                : dish.nutriScore === "D"
+                                                ? "orange"
+                                                : "red"
+                                        }`}
                                     >
                                         {dish.nutriScore}
                                     </span>
@@ -184,12 +186,14 @@
         </div>
         <div class="dish-more-info">
             <div class="block d-md-none">
-                <div class="flex gap-0-5">
-                    <span class="fw-bold">Ingredientes: </span>
-                    <p class="text-capitalize-first">
-                        {selectedDish?.ingredients}
-                    </p>
-                </div>
+                {#if selectedDish?.ingredients}
+                    <div class="flex gap-0-5">
+                        <span class="fw-bold">Ingredientes: </span>
+                        <p class="text-capitalize-first">
+                            {selectedDish?.ingredients}
+                        </p>
+                    </div>
+                {/if}
                 {#if selectedDish?.allergens}
                     <div class="flex gap-0-5">
                         <span class="fw-bold">Alérgenos: </span>
@@ -219,7 +223,7 @@
         <a href={selectedDish?.dishUrl} target="_blank" rel="noopener">
             <button class="buy-btn">
                 <Icon icon="carbon:shopping-cart" height="24" />
-                {`Comprar -  ${selectedDish?.price}€`}
+                {`Comprar en ${selectedDish?.platform} -  ${selectedDish?.price}€`}
             </button>
         </a>
     </div>
@@ -263,9 +267,9 @@
             }
 
             .nutriscore {
-                width: 27px;
+                width: 25px;
                 height: 30px;
-                border-radius: 45%;
+                border-radius: 0.5rem;
                 border: 1px solid whitesmoke;
                 color: whitesmoke;
                 display: flex;
