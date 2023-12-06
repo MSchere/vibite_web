@@ -1,13 +1,15 @@
 <script script lang="ts">
-    import { functions } from "$lib/firebase";
+    import { firestore, functions } from "$lib/firebase";
     import { Order, orderingCriteria, search } from "$src/lib/filters";
     import { ErrorType } from "$types/error";
     import Icon from "@iconify/svelte";
+    import { collection, onSnapshot } from "firebase/firestore";
     import { httpsCallable } from "firebase/functions";
 
     let email = "";
     let emailError = "";
     let subscribed = false;
+    let dishesCount =  0;
 
     async function subscribe() {
         const regex = /\S+@\S+\.\S+/;
@@ -35,6 +37,15 @@
         if ($orderingCriteria[0].field !== Order.NAME) orderingCriteria.update((o) => ({ ...o, field: Order.NAME }));
         search.update((s) => srchValue);
     }
+
+    function getNumberOfDishes() {
+        const dishesRef = collection(firestore, "dishes");
+        onSnapshot(dishesRef, (snapshot) => {
+            dishesCount = snapshot.docs.length;
+        });
+    }
+
+    getNumberOfDishes();
 </script>
 
 <main id="frame">
@@ -45,7 +56,7 @@
             </h1>
             <form class="srch">
                 <Icon icon="carbon:search" class="absolute" height="24" style="left: 1rem;"></Icon>
-                <input type="text" class="srch-box" placeholder="Buscar platos.." on:keyup={updateSearch} />
+                <input type="text" class="srch-box" placeholder={`Buscar entre ${dishesCount} platos...`} on:keyup={updateSearch} />
                 <div class="srch-btn">
                     <a href="/dishes">
                         <button type="submit">Buscar</button>
@@ -71,7 +82,7 @@
                         <li>Tappers.es</li>
                     </div>
                     <div class="flex items-center gap-0-5">
-                        <input type="checkbox" class="unchecked" disabled={true} />
+                        <input type="checkbox" checked={true} disabled={true} />
                         <li>Prozis</li>
                     </div>
                     <div class="flex items-center gap-0-5">

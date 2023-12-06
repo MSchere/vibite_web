@@ -2,7 +2,7 @@
     import { NutrientValues100, Order, filter, orderingCriteria, search } from "$src/lib/filters";
     import { NutrientName, Platform } from "$src/types/dish";
     import Icon from "@iconify/svelte";
-    let priceRange: [number, number] = [0, 0];
+    let priceRange: [number, number] = [0, 7];
 
     let nutrientRanges: Record<NutrientName, [number, number]> = {
         [NutrientName.ENERGY]: [0, 900],
@@ -29,7 +29,7 @@
     let checkedPlatforms: Record<Platform, boolean> = {
         [Platform.WETACA]: true,
         [Platform.TAPPERS]: true,
-        [Platform.PROZIS]: false,
+        [Platform.PROZIS]: true,
         [Platform.NOCOCINOMAS]: false,
         [Platform.MENUDIET]: false,
         [Platform.GUISOS]: false,
@@ -286,7 +286,7 @@
                 </details>
             </li>
             <li>
-                <details open>
+                <details>
                     <summary class="fw-bold">Filtros</summary>
                     <div class="filter-field">
                         <span>Activos</span>
@@ -319,12 +319,7 @@
                     </div>
                     <div class="filter-field">
                         <span>Prozis</span>
-                        <input
-                            class="checkbox"
-                            type="checkbox"
-                            bind:checked={checkedPlatforms[Platform.PROZIS]}
-                            disabled={true}
-                        />
+                        <input class="checkbox" type="checkbox" bind:checked={checkedPlatforms[Platform.PROZIS]} />
                     </div>
                 </details>
             </li>

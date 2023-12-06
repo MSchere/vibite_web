@@ -71,7 +71,8 @@ const defaultNutrientRanges: Record<NutrientValues100, [number, number]> = {
 const defaultPlatforms: Platform[] = [
     Platform.WETACA,
     Platform.TAPPERS,
-    // Platform.PROZIS,
+    Platform.PROZIS,
+    // add more here
 ];
 export const filter: Writable<Filter> = writable({
     isOpen: false,

@@ -7,9 +7,11 @@
     import Icon from "@iconify/svelte";
     import { QueryConstraint, collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
 
-    import WetacaLogo from "$lib/static/logos/wetaca.png";
-    import TappersLogo from "$lib/static/logos/tappers.png";
+    import ErrorImg from "$lib/static/images/error.png";
     import ProzisLogo from "$lib/static/logos/prozis.png";
+    import TappersLogo from "$lib/static/logos/tappers.png";
+    import WetacaLogo from "$lib/static/logos/wetaca.png";
+
 
     let firstLoad = true;
     let dishes: Dish[] = [];
@@ -51,8 +53,8 @@
     function loadDishes() {
         try {
             const filterQuery = getFilterQuery();
-            onSnapshot(filterQuery, async (snapshot: any) => {
-                dishes = snapshot.docs.map((doc: any) => {
+            onSnapshot(filterQuery, async (snapshot) => {
+                dishes = snapshot.docs.map((doc) => {
                     const dish = doc.data() as Dish;
                     dish.id = doc.id;
                     if (dish) firstLoad = false;
@@ -78,8 +80,8 @@
 
     // function disableDishes() {
     //     const allDishes = collection(firestore, "dishes");
-    //     onSnapshot(allDishes, (snapshot: any) => {
-    //         snapshot.docs.forEach(async (doc: any) => {
+    //     onSnapshot(allDishes, (snapshot) => {
+    //         snapshot.docs.forEach(async (doc) => {
     //             await updateDoc(doc.ref, { isAvailable: false });
     //         });
     //     });
@@ -104,7 +106,11 @@
                         showModal = true;
                     }}
                 >
-                    <img class="dish-img" src={dish.imageUrl} alt={dish.name} />
+                    <img
+                        class="dish-img"
+                        src={dish.imageUrl ?? ErrorImg}
+                        alt={dish.name}
+                    />
                     <div class="p-0-5">
                         <div class="flex items-center">
                             <div class="flex justify-between absolute gap-0-5 top-0 left-0 w-full p-0-5">
@@ -173,7 +179,7 @@
     <div class="modal-section">
         <div class="flex gap-0-5">
             <div class="relative">
-                <img src={selectedDish?.imageUrl} alt={selectedDish?.name} />
+                <img src={selectedDish?.imageUrl ?? ErrorImg} alt={selectedDish?.name} />
                 <span class="timestamp-text">
                     {`Actualizado: ${formatDate(selectedDish?.updatedAt)}`}
                 </span>
@@ -283,6 +289,9 @@
             }
 
             .platform-logo {
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 background-color: white;
                 border-radius: 0.5rem;
                 padding: 0.1rem;

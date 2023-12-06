@@ -1,4 +1,4 @@
-import { Dish, NutriScore, NutrientNames } from "$root/src/types/dish";
+import { Dish, NutriScore, NutrientName } from "$root/src/types/dish";
 
 export function calculateNutriScore(dish: Dish): {
     nutriScore: NutriScore;
@@ -25,7 +25,7 @@ export function calculateNutriScore(dish: Dish): {
 
         if (nutrientName === "energy") {
             const energy = dish.nutrients[nutrientName].value100;
-            const interval = badNutrientsTable[NutrientNames.ENERGY];
+            const interval = badNutrientsTable[NutrientName.ENERGY];
 
             for (let i = 0; i < interval.length; i++) {
                 if (energy < interval[i]) {

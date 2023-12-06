@@ -1,4 +1,4 @@
-import { Dish } from "$root/src/types/dish";
+import { Dish, Platform } from "$root/src/types/dish";
 import { logger } from "firebase-functions/v2";
 import { WetacaDishDto } from "src/dtos/wetacaDish.dto";
 import { calculateNutriScore } from "./calculators";
@@ -35,7 +35,7 @@ export class WetacaDishProcessor {
             logger.log("REPONSE FROM WETACA", response);
             logger.log("JSON RESPONSE FROM WETACA", json);
             return json.data.menu.dishes as WetacaDishDto[];
-        } catch (error: any) {
+        } catch (error: unknown) {
             logger.error(error);
             return [];
         }
@@ -50,6 +50,8 @@ export class WetacaDishProcessor {
         const dish: Dish = {
             id: `${id}`,
             name,
+            platform: Platform.WETACA,
+            weight: wetacaDish.weight,
             description: category.description,
             ingredients: ingredients.join(", "),
             price: price / 100,

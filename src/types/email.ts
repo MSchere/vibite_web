@@ -4,7 +4,7 @@ export interface Message {
     text: string;
     html: string;
     amp?: string;
-    attachments?: any[];
+    attachments?: string[];
 }
 export interface Email {
     from?: string;
@@ -16,6 +16,6 @@ export interface Email {
     ccUids?: string[];
     bcc?: string[];
     bccUids?: string[];
-    headers?: any;
-    template?: any;
+    headers?: string[];
+    template?: string;
 }

@@ -1,4 +1,4 @@
-import { Dish } from "$types/dish";
+import { Dish, Platform } from "$types/dish";
 import * as admin from "firebase-admin";
 import { CollectionReference, DocumentData } from "firebase-admin/firestore";
 
@@ -36,9 +36,12 @@ export class DishesRepository {
 
     static async disbleDishes(): Promise<void> {
         const dishesRef = this.getDishesCollection();
-        const dishesSnapshot = await dishesRef.get();
-        dishesSnapshot.docs.forEach((doc) => {
-            doc.ref.update({ isAvailable: false });
+        // disable only wetaca and tappers dishes
+        const dishesSnapshot = await dishesRef.where("platform", "in", [Platform.WETACA, Platform.TAPPERS]).get();
+        const dishes = dishesSnapshot.docs.map((doc) => doc.data());
+        dishes.forEach(async (dish) => {
+            const dishRef = dishesRef.doc(dish.id);
+            await dishRef.update({ isAvailable: false });
         });
     }
 }
