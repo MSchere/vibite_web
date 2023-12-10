@@ -34,14 +34,18 @@ export class DishesRepository {
         });
     }
 
-    static async disbleDishes(): Promise<void> {
+    static async disbleDishes(platforms: Platform[]): Promise<number> {
         const dishesRef = this.getDishesCollection();
         // disable only wetaca and tappers dishes
-        const dishesSnapshot = await dishesRef.where("platform", "in", [Platform.WETACA, Platform.TAPPERS]).get();
-        const dishes = dishesSnapshot.docs.map((doc) => doc.data());
-        dishes.forEach(async (dish) => {
-            const dishRef = dishesRef.doc(dish.id);
+        const dishesSnapshot = await dishesRef
+            .where("platform", "in", platforms)
+            .where("isAvailable", "==", true)
+            .get();
+        const dishIds = dishesSnapshot.docs.map((doc) => doc.id);
+        for (const id of dishIds) {
+            const dishRef = dishesRef.doc(id);
             await dishRef.update({ isAvailable: false });
-        });
+        }
+        return dishIds.length;
     }
 }
