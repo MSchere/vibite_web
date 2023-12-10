@@ -1,7 +1,7 @@
 <script script lang="ts">
     import Modal from "$components/Modal.svelte";
     import NutritionalInfo from "$components/NutritionalInfo.svelte";
-    import { firestore } from "$lib/firebase";
+    import { firestore, functions } from "$lib/firebase";
     import { filter, orderingCriteria, resetAll, search } from "$src/lib/filters";
     import { Platform, type Dish } from "$types/dish";
     import Icon from "@iconify/svelte";
@@ -11,6 +11,7 @@
     import ProzisLogo from "$lib/static/logos/prozis.png";
     import TappersLogo from "$lib/static/logos/tappers.png";
     import WetacaLogo from "$lib/static/logos/wetaca.png";
+    import { httpsCallable } from "firebase/functions";
 
 
     let firstLoad = true;
@@ -78,21 +79,18 @@
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     }
 
-    // function disableDishes() {
-    //     const allDishes = collection(firestore, "dishes");
-    //     onSnapshot(allDishes, (snapshot) => {
-    //         snapshot.docs.forEach(async (doc) => {
-    //             await updateDoc(doc.ref, { isAvailable: false });
-    //         });
-    //     });
-    // }
+    async function disableDishes() {
+        const disableDishesCallable = httpsCallable(functions, "disableDishesCallable");
+        const res = await disableDishesCallable();
+        console.log(res);
+    }
 </script>
 
 <main>
     <!-- <button
         on:click={async (e) => {
             await disableDishes();
-        }}>Update dishes</button
+        }}>Disable dishes</button
     > -->
     {#if dishes.length > 0}
         <div class={!$filter.isOpen ? "dishes" : "dishes dishes-sidebar"}>
